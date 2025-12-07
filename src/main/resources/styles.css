@@ -2,6 +2,7 @@
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
+    -fx-font-family: "Roboto Thin";
 }
 
 .button {
@@ -10,20 +11,42 @@
     -fx-text-fill: white;
     -fx-background-radius: 15px;
     -fx-background-color: rgba(73, 77, 78, 0.5);
+    -fx-font-family: "Roboto Thin";
 }
 
 .date-picker {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: black;
+    -fx-font-family: "Roboto Thin";
 }
 
 .text-field {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: black;
+    -fx-font-family: "Roboto Thin";
 }
 
-.label-title {
-    -fx-font-size: 20px;
+.table-view {
+    -fx-background-color: black;
+}
+
+.table-row-cell {
+    -fx-background-color: black;
+}
+
+.table-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto Thin";
+    -fx-border-color: derive(black, 30%);
+    -fx-border-width: 0 1 1 0;
+}
+
+.table-row-cell:filled {
+    -fx-border-color: derive(black, 40%);
+    -fx-border-width: 0 1 1 0;
 }

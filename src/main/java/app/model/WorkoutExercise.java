@@ -25,5 +25,21 @@ public class WorkoutExercise {
         this.setsString = setsString;
         this.session = session;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSetsString() {
+        return setsString;
+    }
+
+    public WorkoutSession getSession() {
+        return session;
+    }
+
+    public int getId() {
+        return id;
+    }
 }
 

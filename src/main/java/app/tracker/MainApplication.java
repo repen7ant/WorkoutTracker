@@ -23,7 +23,7 @@ public class MainApplication extends Application {
         showAddWorkout();
 
         stage.getIcons().add(new Image("/icon.jpg"));
-        stage.setMinWidth(800);
+        stage.setMinWidth(900);
         stage.setMinHeight(900);
         stage.setTitle("Workout Tracker");
         stage.show();
@@ -31,7 +31,7 @@ public class MainApplication extends Application {
 
     public void showAddWorkout() throws IOException {
         var loader = new FXMLLoader(MainApplication.class.getResource("add-workout-view.fxml"));
-        var scene = new Scene(loader.load(), 800, 900);
+        var scene = new Scene(loader.load(), 900, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Add workout");
@@ -39,7 +39,7 @@ public class MainApplication extends Application {
 
     public void showViewStatistics() throws IOException {
         var loader = new FXMLLoader(MainApplication.class.getResource("view-statistics-view.fxml"));
-        var scene = new Scene(loader.load(), 800, 900);
+        var scene = new Scene(loader.load(), 900, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Statistics");
@@ -47,7 +47,7 @@ public class MainApplication extends Application {
 
     public void showViewGraphs() throws IOException {
         var loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
-        var scene = new Scene(loader.load(), 800, 900);
+        var scene = new Scene(loader.load(), 900, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Progress");
