@@ -1,0 +1,101 @@
+Name,Muscles,Description
+Bench Press,Chest; Triceps; Shoulders,Press a barbell upward while lying on a flat bench.
+Incline Bench Press,Upper Chest; Triceps; Shoulders,Press a barbell upward on an incline bench.
+Decline Bench Press,Lower Chest; Triceps; Shoulders,Press a barbell upward on a decline bench.
+Dumbbell Bench Press,Chest; Triceps; Shoulders,Press dumbbells upward while lying on a bench.
+Dumbbell Fly,Chest,Open your arms wide and bring dumbbells together above your chest.
+Chest Dip,Chest; Triceps,Lower and raise your body on parallel bars leaning slightly forward.
+Push-Up,Chest; Triceps; Shoulders,Push your body up and down from the floor.
+Cable Chest Fly,Chest,Pull cable handles together in front of your chest.
+Pec Deck Machine,Chest,Bring padded arms together in a chest fly motion.
+Cable Crossover High,Chest,Pull cables downward toward the centerline.
+Cable Crossover Low,Chest,Pull cables upward toward the centerline.
+Squat,Quadriceps; Glutes; Hamstrings,Lower your hips and stand back up with weight on your shoulders.
+Front Squat,Quadriceps; Core,Hold the barbell in front rack position and squat.
+Goblet Squat,Quadriceps; Glutes,Squat while holding a dumbbell at chest level.
+Hack Squat,Quadriceps; Glutes,Perform squats on a hack squat machine.
+Leg Press,Quadriceps; Glutes; Hamstrings,Push a weighted platform away using your legs.
+Walking Lunge,Quadriceps; Glutes; Hamstrings,Step forward into lunges while walking.
+Reverse Lunge,Quadriceps; Glutes,Take a backward step into a lunge.
+Bulgarian Split Squat,Quadriceps; Glutes,Squat on one leg with rear foot elevated.
+Step-Up,Quadriceps; Glutes,Step onto a platform while holding weights.
+Deadlift,Hamstrings; Glutes; Back,Lift a barbell from the floor to hip level.
+Romanian Deadlift,Hamstrings; Glutes,Lower barbell to mid-shin while keeping legs slightly bent.
+Sumo Deadlift,Glutes; Adductors; Back,Deadlift with a wide stance.
+Trap Bar Deadlift,Glutes; Hamstrings; Back,Lift using a trap bar with neutral grip.
+Good Morning,Hamstrings; Lower Back,Hinge at hips with barbell on your back.
+Back Extension,Lower Back; Glutes,Raise torso from a bent position on extension bench.
+Hip Thrust,Glutes; Hamstrings,Lift hips upward with shoulders on a bench.
+Glute Bridge,Glutes; Hamstrings,Lift hips upward from the floor.
+Cable Pull-Through,Glutes; Hamstrings,Pull cable between legs using hip hinge.
+Leg Extension,Quadriceps,Extend legs against resistance on machine.
+Leg Curl Seated,Hamstrings,Curl legs while seated.
+Leg Curl Lying,Hamstrings,Curl legs while lying face down.
+Standing Calf Raise,Calves,Raise heels while standing.
+Seated Calf Raise,Calves,Raise heels while seated.
+Overhead Press,Shoulders; Triceps,Press barbell overhead while standing.
+Seated Shoulder Press,Shoulders; Triceps,Press dumbbells overhead while seated.
+Arnold Press,Shoulders,Rotate dumbbells while pressing overhead.
+Lateral Raise,Shoulders,Lift dumbbells outward to shoulder height.
+Front Raise,Shoulders,Lift weight straight in front to shoulder height.
+Rear Delt Fly,Rear Delts; Upper Back,Raise dumbbells laterally while bent over.
+Machine Shoulder Press,Shoulders,Press weight overhead on a machine.
+Upright Row,Shoulders; Traps,Pull bar upward to chest level.
+Barbell Row,Back; Biceps,Row barbell toward torso.
+Pendlay Row,Back; Biceps,Row barbell explosively from floor.
+Dumbbell Row,Back; Biceps,Row dumbbell toward torso with one arm.
+Lat Pulldown,Back; Biceps,Pull bar down to chest.
+Wide-Grip Pulldown,Lats; Upper Back,Pull wide-grip bar to chest.
+Close-Grip Pulldown,Back; Biceps,Pull narrow-grip bar to chest.
+Seated Cable Row,Back; Biceps,Pull cable handle toward torso.
+Chest-Supported Row,Back; Biceps,Row weights while chest rests on bench.
+T-Bar Row,Back; Biceps,Row a landmine bar toward torso.
+Pull-Up,Back; Biceps,Pull body upward to bar.
+Chin-Up,Back; Biceps,Pull body up with underhand grip.
+Inverted Row,Back; Biceps,Pull chest toward bar while body is suspended.
+Face Pull,Rear Delts; Upper Back,Pull rope attachment toward face.
+Cable Row High,Upper Back,Row cables from high angle.
+Cable Row Low,Mid Back,Row cables from low angle.
+Biceps Curl,Biceps,Curl weights upward.
+Hammer Curl,Biceps; Forearms,Curl dumbbells with neutral grip.
+Preacher Curl,Biceps,Curl weight on preacher bench.
+Cable Curl,Biceps,Curl cable handle upward.
+Incline Dumbbell Curl,Biceps,Curl dumbbells on an incline bench.
+Concentration Curl,Biceps,Curl dumbbell while seated with elbow on thigh.
+Tricep Pushdown,Triceps,Push cable bar downward.
+Overhead Tricep Extension,Triceps,Extend weight overhead.
+Skullcrusher,Triceps,Lower and extend barbell toward forehead.
+Cable Kickback,Triceps,Extend arm backward using cable.
+Dips (Triceps),Triceps,Lower and push body on parallel bars upright.
+Rope Overhead Extension,Triceps,Extend rope overhead.
+Cable Lateral Raise,Shoulders,Lift cable outward to shoulder height.
+Machine Fly Reverse,Rear Delts,Reverse fly motion on machine.
+Machine Chest Press,Chest,Press weight forward on machine.
+Machine Row,Back,Pull weight on machine.
+Machine Leg Press Horizontal,Legs,Push platform horizontally.
+Smith Machine Squat,Legs,Perform squats using smith machine.
+Smith Machine Bench Press,Chest,Press bar on smith machine.
+Smith Machine Row,Back,Row bar on smith machine.
+Cable Crunch,Abs,Crunch downward using cable rope.
+Hanging Leg Raise,Abs; Hip Flexors,Raise legs while hanging.
+Knee Raise,Abs,Raise knees while hanging or supported.
+Plank,Core,Hold body in straight position on elbows.
+Side Plank,Core,Hold body sideways supported on one elbow.
+Russian Twist,Obliques,Twist torso while holding weight.
+Cable Woodchop,Obliques,Pull cable diagonally across body.
+Ab Wheel Rollout,Abs; Core,Roll wheel forward and back.
+Crunch Machine,Abs,Crunch forward on machine.
+Back Hyperextension Machine,Back,Extend torso upward on machine.
+Farmer's Walk,Full Body; Grip,Walk while holding heavy weights.
+Sled Push,Legs; Glutes; Conditioning,Push weighted sled forward.
+Sled Pull,Legs; Back,Pull weighted sled backward.
+Kettlebell Swing,Glutes; Hamstrings,Swing kettlebell explosively.
+Kettlebell Clean,Full Body,Clean kettlebell to rack position.
+Kettlebell Snatch,Full Body,Snatch kettlebell overhead.
+Landmine Press,Shoulders; Chest,Press barbell in landmine setup.
+Landmine Row,Back; Biceps,Row landmine bar upward.
+Landmine Twist,Core,Twist torso while holding landmine bar.
+Hip Abduction Machine,Glutes,Move legs outward against resistance.
+Hip Adduction Machine,Adductors,Move legs inward against resistance.
+Seated Row Machine,Back; Biceps,Row handles toward torso.
+Lat Machine Pull-Over,Lats,Pull bar downward with straight arms.

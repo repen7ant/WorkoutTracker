@@ -1,0 +1,29 @@
+package app.model;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable(tableName = "workout_exercises")
+public class WorkoutExercise {
+
+    @DatabaseField(generatedId = true)
+    private int id;
+
+    @DatabaseField
+    private String name;
+
+    @DatabaseField
+    private String setsString;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "session_id")
+    private WorkoutSession session;
+
+    public WorkoutExercise() {}
+
+    public WorkoutExercise(String name, String setsString, WorkoutSession session) {
+        this.name = name;
+        this.setsString = setsString;
+        this.session = session;
+    }
+}
+
