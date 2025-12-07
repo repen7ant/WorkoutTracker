@@ -15,7 +15,7 @@ public class ExerciseService {
 
     public static void loadExercises() {
         try (InputStream is = ExerciseService.class.getResourceAsStream("/exercises.csv")) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            try (var reader = new BufferedReader(new InputStreamReader(is))) {
                 reader.readLine();
                 String line;
                 while ((line = reader.readLine()) != null) {

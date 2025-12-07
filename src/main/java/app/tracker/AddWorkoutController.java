@@ -39,11 +39,11 @@ public class AddWorkoutController {
     }
 
     private void addWorkoutInfoSection() {
-        VBox workoutInfoBox = new VBox(10);
+        var workoutInfoBox = new VBox(10);
         workoutInfoBox.setAlignment(Pos.CENTER);
 
         var infoLabel = new Label("Session information");
-        DatePicker datePicker = new DatePicker();
+        var datePicker = new DatePicker();
         datePicker.setPromptText("Select workout date");
 
         var bodyweight = new TextField();
@@ -57,15 +57,15 @@ public class AddWorkoutController {
     @FXML
     private void addExerciseSection() {
 
-        int exerciseNumber = exercisesContainer.getChildren().size() + 1;
+        var exerciseNumber = exercisesContainer.getChildren().size() + 1;
 
-        VBox exerciseBox = new VBox(10);
+        var exerciseBox = new VBox(10);
         exerciseBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 2px; -fx-border-radius: 15px;");
         exerciseBox.setAlignment(Pos.CENTER);
 
-        Label exerciseLabel = new Label("Exercise " + exerciseNumber);
+        var exerciseLabel = new Label("Exercise " + exerciseNumber);
 
-        ComboBox<String> exerciseCombo = new ComboBox<>();
+        var exerciseCombo = new ComboBox<String>();
         exerciseCombo.setEditable(true);
         exerciseCombo.setPromptText("Enter exercise name");
         exerciseCombo.setMaxWidth(200);
@@ -75,7 +75,7 @@ public class AddWorkoutController {
                         allExercises.stream().map(Exercise::name).collect(Collectors.toList())
                 );
 
-        FilteredList<String> filteredItems = new FilteredList<>(allItems, s -> true);
+        var filteredItems = new FilteredList<>(allItems, s -> true);
         exerciseCombo.setItems(filteredItems);
         exerciseCombo.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
 
@@ -90,27 +90,27 @@ public class AddWorkoutController {
         });
 
         exerciseCombo.setOnAction(e -> {
-            String selected = exerciseCombo.getSelectionModel().getSelectedItem();
+            var selected = exerciseCombo.getSelectionModel().getSelectedItem();
             if (selected != null)
                 exerciseCombo.getEditor().setText(selected);
         });
 
-        Button infoBtn = new Button("info");
+        var infoBtn = new Button("info");
         infoBtn.setOnAction(e -> showExerciseInfo(exerciseCombo));
 
-        HBox exerciseInput = new HBox(10, exerciseCombo, infoBtn);
+        var exerciseInput = new HBox(10, exerciseCombo, infoBtn);
         exerciseInput.setAlignment(Pos.CENTER);
 
-        VBox setsContainer = new VBox(5);
+        var setsContainer = new VBox(5);
         setsContainer.setAlignment(Pos.CENTER);
 
         addSet(setsContainer);
 
-        Button addSetBtn = new Button("+");
+        var addSetBtn = new Button("+");
         addSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: #008000");
         addSetBtn.setOnAction(e -> addSet(setsContainer));
 
-        Button removeSetBtn = new Button("-");
+        var removeSetBtn = new Button("-");
         removeSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: #af3321");
         removeSetBtn.setOnAction(e -> {
             if (setsContainer.getChildren().size() > 1) {
@@ -119,7 +119,7 @@ public class AddWorkoutController {
             }
         });
 
-        HBox setButtons = new HBox(10, addSetBtn, removeSetBtn);
+        var setButtons = new HBox(10, addSetBtn, removeSetBtn);
         setButtons.setAlignment(Pos.CENTER);
 
         exerciseBox.getChildren().addAll(
@@ -134,20 +134,20 @@ public class AddWorkoutController {
     }
 
     private void addSet(VBox setsContainer) {
-        int setNumber = setsContainer.getChildren().size() + 1;
+        var setNumber = setsContainer.getChildren().size() + 1;
 
-        HBox setBox = new HBox(10);
+        var setBox = new HBox(10);
         setBox.setAlignment(Pos.CENTER);
 
-        Label setLabel = new Label(valueOf(setNumber));
+        var setLabel = new Label(valueOf(setNumber));
 
-        TextField weightField = new TextField();
+        var weightField = new TextField();
         weightField.setPromptText("Weight");
         weightField.setMaxWidth(70);
 
-        Label xLabel = new Label("×");
+        var xLabel = new Label("×");
 
-        TextField repsField = new TextField();
+        var repsField = new TextField();
         repsField.setPromptText("Reps");
         repsField.setMaxWidth(70);
 
@@ -166,46 +166,46 @@ public class AddWorkoutController {
     }
 
     private void updateExerciseNumbers() {
-        int i = 1;
+        var i = 1;
         for (var node : exercisesContainer.getChildren()) {
-            VBox box = (VBox) node;
-            Label lbl = (Label) box.getChildren().get(0);
+            var box = (VBox) node;
+            var lbl = (Label) box.getChildren().get(0);
             lbl.setText("Exercise " + (i++));
         }
     }
 
     private void updateSetNumbers(VBox setsContainer) {
-        int i = 1;
+        var i = 1;
         for (var node : setsContainer.getChildren()) {
-            HBox box = (HBox) node;
-            Label lbl = (Label) box.getChildren().get(0);
+            var box = (HBox) node;
+            var lbl = (Label) box.getChildren().get(0);
             lbl.setText(String.valueOf((i++)));
         }
     }
 
     @FXML
     private void showExerciseInfo(ComboBox<String> comboBox) {
-        String exerciseName = comboBox.getEditor().getText().trim();
+        var exerciseName = comboBox.getEditor().getText().trim();
         if (exerciseName.isEmpty()) {
             showAlert("Enter exercise name");
             return;
         }
 
-        Exercise exercise = ExerciseService.findByName(exerciseName);
+        var exercise = ExerciseService.findByName(exerciseName);
         if (exercise == null) {
             showAlert("Exercise not found");
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        var alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Exercise information");
         alert.setHeaderText(exercise.name());
 
-        VBox content = new VBox(10);
+        var content = new VBox(10);
         content.setStyle("-fx-padding: 20;");
 
-        Label musclesLabel = new Label("Targeted muscles: " + exercise.muscles());
-        Label descLabel = new Label("Description: " + exercise.description());
+        var musclesLabel = new Label("Targeted muscles: " + exercise.muscles());
+        var descLabel = new Label("Description: " + exercise.description());
 
         descLabel.setWrapText(true);
 
@@ -216,7 +216,7 @@ public class AddWorkoutController {
     }
 
     private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        var alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setContentText(message);
         alert.showAndWait();
@@ -230,10 +230,10 @@ public class AddWorkoutController {
                 return;
             }
 
-            VBox infoBox = (VBox) workoutInfoContainer.getChildren().get(0);
+            var infoBox = (VBox) workoutInfoContainer.getChildren().get(0);
 
-            DatePicker datePicker = (DatePicker)infoBox.getChildren().get(1);
-            TextField bodyweightField = (TextField)infoBox.getChildren().get(2);
+            var datePicker = (DatePicker)infoBox.getChildren().get(1);
+            var bodyweightField = (TextField)infoBox.getChildren().get(2);
 
             var localDate = datePicker.getValue();
             if (localDate == null) {
@@ -241,25 +241,25 @@ public class AddWorkoutController {
                 return;
             }
 
-            Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            var date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             double bodyweight = Double.parseDouble(bodyweightField.getText());
 
             for (var node : exercisesContainer.getChildren()) {
-                VBox exerciseBox = (VBox) node;
+                var exerciseBox = (VBox) node;
 
-                HBox exerciseInput = (HBox) exerciseBox.getChildren().get(1);
-                ComboBox<String> combo = (ComboBox<String>) exerciseInput.getChildren().get(0);
+                var exerciseInput = (HBox) exerciseBox.getChildren().get(1);
+                var combo = (ComboBox<String>) exerciseInput.getChildren().get(0);
 
-                String exerciseName = combo.getEditor().getText();
+                var exerciseName = combo.getEditor().getText();
 
-                VBox setsContainer = (VBox) exerciseBox.getChildren().get(3);
-                StringBuilder setsString = new StringBuilder();
+                var setsContainer = (VBox) exerciseBox.getChildren().get(3);
+                var setsString = new StringBuilder();
 
                 for (var setNode : setsContainer.getChildren()) {
-                    HBox setBox = (HBox) setNode;
+                    var setBox = (HBox) setNode;
 
-                    TextField weightFieldSet = (TextField) setBox.getChildren().get(1);
-                    TextField repsFieldSet = (TextField) setBox.getChildren().get(3);
+                    var weightFieldSet = (TextField) setBox.getChildren().get(1);
+                    var repsFieldSet = (TextField) setBox.getChildren().get(3);
 
                     if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
                         if (!setsString.isEmpty())
@@ -271,13 +271,13 @@ public class AddWorkoutController {
                     }
                 }
 
-                WorkoutSession session = new WorkoutSession(date, bodyweight);
+                var session = new WorkoutSession(date, bodyweight);
                 DatabaseHelper.sessionDao.create(session);
-                WorkoutExercise ex = new WorkoutExercise(exerciseName, setsString.toString(), session);
+                var ex = new WorkoutExercise(exerciseName, setsString.toString(), session);
                 DatabaseHelper.exerciseDao.create(ex);
             }
 
-            Alert ok = new Alert(Alert.AlertType.INFORMATION);
+            var ok = new Alert(Alert.AlertType.INFORMATION);
             ok.setTitle("Success");
             ok.setContentText("Workout saved");
             ok.showAndWait();
@@ -291,18 +291,18 @@ public class AddWorkoutController {
 
     private boolean hasInvalidSets() {
         for (var node : exercisesContainer.getChildren()) {
-            VBox exerciseBox = (VBox) node;
+            var exerciseBox = (VBox) node;
 
-            VBox setsContainer = (VBox) exerciseBox.getChildren().get(3);
+            var setsContainer = (VBox) exerciseBox.getChildren().get(3);
 
             for (var setNode : setsContainer.getChildren()) {
-                HBox setBox = (HBox) setNode;
+                var setBox = (HBox) setNode;
 
-                TextField weightField = (TextField) setBox.getChildren().get(1);
-                TextField repsField   = (TextField) setBox.getChildren().get(3);
+                var weightField = (TextField) setBox.getChildren().get(1);
+                var repsField   = (TextField) setBox.getChildren().get(3);
 
-                boolean weightFilled = !weightField.getText().isBlank();
-                boolean repsFilled   = !repsField.getText().isBlank();
+                var weightFilled = !weightField.getText().isBlank();
+                var repsFilled   = !repsField.getText().isBlank();
 
                 if (!weightFilled || !repsFilled) {
                     return true;
@@ -314,7 +314,7 @@ public class AddWorkoutController {
 
     @FXML
     private void deleteDB() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        var confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm deletion");
         confirm.setHeaderText("Delete all saved data?");
         confirm.setContentText("This will permanently delete all workouts. Continue?");
@@ -327,27 +327,27 @@ public class AddWorkoutController {
         DatabaseHelper.close();
 
         try {
-            String dbUrl = "jdbc:sqlite:workouts.db";
-            String pathPart = dbUrl.replace("jdbc:sqlite:", "");
-            Path dbPath = Paths.get(pathPart).toAbsolutePath();
+            var dbUrl = "jdbc:sqlite:workouts.db";
+            var pathPart = dbUrl.replace("jdbc:sqlite:", "");
+            var dbPath = Paths.get(pathPart).toAbsolutePath();
 
             if (Files.exists(dbPath)) {
                 Files.delete(dbPath);
-                Alert ok = new Alert(Alert.AlertType.INFORMATION);
+                var ok = new Alert(Alert.AlertType.INFORMATION);
                 ok.setTitle("Success");
                 ok.setHeaderText(null);
                 ok.setContentText("All data deleted.");
                 ok.showAndWait();
                 DatabaseHelper.init();
             } else {
-                Alert warn = new Alert(Alert.AlertType.WARNING);
+                var warn = new Alert(Alert.AlertType.WARNING);
                 warn.setTitle("File not found");
                 warn.setHeaderText("Database file not found.");
                 warn.setContentText("Expected path:\n" + dbPath);
                 warn.showAndWait();
             }
         } catch (Exception ex) {
-            Alert err = new Alert(Alert.AlertType.ERROR);
+            var err = new Alert(Alert.AlertType.ERROR);
             err.setTitle("Error");
             err.setHeaderText("Could not delete database file.");
             err.setContentText(ex.getMessage());

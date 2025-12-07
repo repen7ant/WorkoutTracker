@@ -1,6 +1,7 @@
 package app.tracker;
 
 import app.database.DatabaseHelper;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -29,24 +30,24 @@ public class MainApplication extends Application {
     }
 
     public void showAddWorkout() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("add-workout-view.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 900);
+        var loader = new FXMLLoader(MainApplication.class.getResource("add-workout-view.fxml"));
+        var scene = new Scene(loader.load(), 800, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Add workout");
     }
 
     public void showViewStatistics() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("view-statistics-view.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 900);
+        var loader = new FXMLLoader(MainApplication.class.getResource("view-statistics-view.fxml"));
+        var scene = new Scene(loader.load(), 800, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Statistics");
     }
 
     public void showViewGraphs() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 900);
+        var loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
+        var scene = new Scene(loader.load(), 800, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Progress");
