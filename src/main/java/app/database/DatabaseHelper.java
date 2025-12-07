@@ -28,4 +28,15 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
+
+    public static void close() {
+        try {
+            if (connectionSource != null) {
+                connectionSource.close();
+                connectionSource = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

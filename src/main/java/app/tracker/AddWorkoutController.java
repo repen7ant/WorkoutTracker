@@ -15,6 +15,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -318,31 +321,47 @@ public class AddWorkoutController {
 
     @FXML
     private void deleteDB() {
-        // 1. Модальное окно подтверждения
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm deletion");
         confirm.setHeaderText("Delete all saved data?");
-        confirm.setContentText("This will permanently delete the workouts.db file. Continue?");
+        confirm.setContentText("This will permanently delete all workouts. Continue?");
 
-        Optional<ButtonType> result = confirm.showAndWait();
+        var result = confirm.showAndWait();
         if (result.isEmpty() || result.get() != ButtonType.OK) {
-            return; // пользователь отменил
+            return;
         }
 
-        // 2. Удаляем файл
-        File dbFile = new File("workouts.db");
-        if (dbFile.exists() && dbFile.delete()) {
-            Alert info = new Alert(Alert.AlertType.INFORMATION);
-            info.setTitle("Success");
-            info.setHeaderText(null);
-            info.setContentText("All data deleted successfully.");
-            info.showAndWait();
-        } else {
-            Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Error");
-            error.setHeaderText("Could not delete database file.");
-            error.setContentText("Make sure the application has access and the file is not locked.");
-            error.showAndWait();
+        // 1. закрываем соединение с БД
+        DatabaseHelper.close();
+
+        try {
+            // 2. извлекаем путь к файлу из DB_URL
+            String dbUrl = "jdbc:sqlite:workouts.db"; // или взять из DatabaseHelper.DB_URL
+            String pathPart = dbUrl.replace("jdbc:sqlite:", ""); // workouts.db или ./data/workouts.db
+
+            Path dbPath = Paths.get(pathPart).toAbsolutePath();
+
+            if (Files.exists(dbPath)) {
+                Files.delete(dbPath);   // может бросить IOException
+                Alert ok = new Alert(Alert.AlertType.INFORMATION);
+                ok.setTitle("Success");
+                ok.setHeaderText(null);
+                ok.setContentText("All data deleted.");
+                ok.showAndWait();
+                DatabaseHelper.init();
+            } else {
+                Alert warn = new Alert(Alert.AlertType.WARNING);
+                warn.setTitle("File not found");
+                warn.setHeaderText("Database file not found.");
+                warn.setContentText("Expected path:\n" + dbPath);
+                warn.showAndWait();
+            }
+        } catch (Exception ex) {
+            Alert err = new Alert(Alert.AlertType.ERROR);
+            err.setTitle("Error");
+            err.setHeaderText("Could not delete database file.");
+            err.setContentText(ex.getMessage());
+            err.showAndWait();
         }
     }
 
