@@ -1,4 +1,3 @@
-// app/tracker/MainApplication.java
 package app.tracker;
 
 import app.database.DatabaseHelper;

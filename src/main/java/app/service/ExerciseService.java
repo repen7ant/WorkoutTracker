@@ -1,14 +1,17 @@
 package app.service;
 
+import app.database.DatabaseHelper;
 import app.model.Exercise;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ExerciseService {
     private static final List<Exercise> exercises = new ArrayList<>();
+    private static final Logger log = Logger.getLogger(ExerciseService.class.getName());
 
     public static void loadExercises() {
         try (InputStream is = ExerciseService.class.getResourceAsStream("/exercises.csv")) {
@@ -23,7 +26,7 @@ public class ExerciseService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.severe("error parsing exercises: " + e.getMessage());
         }
     }
 

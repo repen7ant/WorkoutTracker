@@ -5,9 +5,11 @@ import app.model.WorkoutSession;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import java.util.logging.Logger;
 
 public class DatabaseHelper {
 
+    private static final Logger log = Logger.getLogger(DatabaseHelper.class.getName());
     private static final String DB_URL = "jdbc:sqlite:workouts.db";
     private static JdbcPooledConnectionSource connectionSource;
 
@@ -25,7 +27,7 @@ public class DatabaseHelper {
             TableUtils.createTableIfNotExists(connectionSource, WorkoutExercise.class);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.severe("db init error: " + e.getMessage());
         }
     }
 
@@ -36,7 +38,7 @@ public class DatabaseHelper {
                 connectionSource = null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.severe("db closing error: " + e.getMessage());
         }
     }
 }
