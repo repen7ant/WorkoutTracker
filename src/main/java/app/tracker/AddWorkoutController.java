@@ -5,6 +5,7 @@ import app.model.Exercise;
 import app.model.WorkoutExercise;
 import app.model.WorkoutSession;
 import app.service.ExerciseService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -14,20 +15,17 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static java.lang.String.valueOf;
 
 public class AddWorkoutController {
-    public VBox workoutInfoContainer;
+    @FXML private VBox workoutInfoContainer;
     @FXML private VBox exercisesContainer;
     private List<Exercise> allExercises;
 
@@ -44,7 +42,7 @@ public class AddWorkoutController {
         VBox workoutInfoBox = new VBox(10);
         workoutInfoBox.setAlignment(Pos.CENTER);
 
-        var dateLabel = new Label("Session information");
+        var infoLabel = new Label("Session information");
         DatePicker datePicker = new DatePicker();
         datePicker.setPromptText("Select workout date");
 
@@ -52,7 +50,7 @@ public class AddWorkoutController {
         bodyweight.setMaxWidth(60);
         bodyweight.setPromptText("BW");
 
-        workoutInfoBox.getChildren().addAll(dateLabel, datePicker, bodyweight);
+        workoutInfoBox.getChildren().addAll(infoLabel, datePicker, bodyweight);
         workoutInfoContainer.getChildren().add(workoutInfoBox);
     }
 
@@ -62,7 +60,7 @@ public class AddWorkoutController {
         int exerciseNumber = exercisesContainer.getChildren().size() + 1;
 
         VBox exerciseBox = new VBox(10);
-        exerciseBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-radius: 15px;");
+        exerciseBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 2px; -fx-border-radius: 15px;");
         exerciseBox.setAlignment(Pos.CENTER);
 
         Label exerciseLabel = new Label("Exercise " + exerciseNumber);
@@ -109,11 +107,11 @@ public class AddWorkoutController {
         addSet(setsContainer);
 
         Button addSetBtn = new Button("+");
-        addSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: rgba(0, 255, 0, 0.6)");
+        addSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: #008000");
         addSetBtn.setOnAction(e -> addSet(setsContainer));
 
         Button removeSetBtn = new Button("-");
-        removeSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: rgba(255, 0, 0, 0.6)");
+        removeSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: #af3321");
         removeSetBtn.setOnAction(e -> {
             if (setsContainer.getChildren().size() > 1) {
                 setsContainer.getChildren().remove(setsContainer.getChildren().size() - 1);
@@ -135,7 +133,6 @@ public class AddWorkoutController {
         exercisesContainer.getChildren().add(exerciseBox);
     }
 
-    // --- Добавление подхода с нумерацией ---
     private void addSet(VBox setsContainer) {
         int setNumber = setsContainer.getChildren().size() + 1;
 
@@ -228,17 +225,15 @@ public class AddWorkoutController {
     @FXML
     private void saveWorkout() {
         try {
-            // 1) проверяем сет‑данные ДО сохранения в БД
             if (hasInvalidSets()) {
                 showAlert("Fill in both weight and reps for each set.");
                 return;
             }
 
-            // 2) читаем дату и вес
             VBox infoBox = (VBox) workoutInfoContainer.getChildren().get(0);
 
-            DatePicker datePicker      = (DatePicker) infoBox.getChildren().get(1);
-            TextField bodyweightField  = (TextField) infoBox.getChildren().get(2);
+            DatePicker datePicker = (DatePicker)infoBox.getChildren().get(1);
+            TextField bodyweightField = (TextField)infoBox.getChildren().get(2);
 
             var localDate = datePicker.getValue();
             if (localDate == null) {
@@ -249,8 +244,6 @@ public class AddWorkoutController {
             Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             double bodyweight = Double.parseDouble(bodyweightField.getText());
 
-
-            // 4) собираем упражнения
             for (var node : exercisesContainer.getChildren()) {
                 VBox exerciseBox = (VBox) node;
 
@@ -266,10 +259,11 @@ public class AddWorkoutController {
                     HBox setBox = (HBox) setNode;
 
                     TextField weightFieldSet = (TextField) setBox.getChildren().get(1);
-                    TextField repsFieldSet   = (TextField) setBox.getChildren().get(3);
+                    TextField repsFieldSet = (TextField) setBox.getChildren().get(3);
 
                     if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
-                        if (!setsString.isEmpty()) setsString.append("-");
+                        if (!setsString.isEmpty())
+                            setsString.append("-");
                         setsString
                                 .append(weightFieldSet.getText())
                                 .append("x")
@@ -281,7 +275,6 @@ public class AddWorkoutController {
                 DatabaseHelper.sessionDao.create(session);
                 WorkoutExercise ex = new WorkoutExercise(exerciseName, setsString.toString(), session);
                 DatabaseHelper.exerciseDao.create(ex);
-
             }
 
             Alert ok = new Alert(Alert.AlertType.INFORMATION);
@@ -331,18 +324,15 @@ public class AddWorkoutController {
             return;
         }
 
-        // 1. закрываем соединение с БД
         DatabaseHelper.close();
 
         try {
-            // 2. извлекаем путь к файлу из DB_URL
-            String dbUrl = "jdbc:sqlite:workouts.db"; // или взять из DatabaseHelper.DB_URL
-            String pathPart = dbUrl.replace("jdbc:sqlite:", ""); // workouts.db или ./data/workouts.db
-
+            String dbUrl = "jdbc:sqlite:workouts.db";
+            String pathPart = dbUrl.replace("jdbc:sqlite:", "");
             Path dbPath = Paths.get(pathPart).toAbsolutePath();
 
             if (Files.exists(dbPath)) {
-                Files.delete(dbPath);   // может бросить IOException
+                Files.delete(dbPath);
                 Alert ok = new Alert(Alert.AlertType.INFORMATION);
                 ok.setTitle("Success");
                 ok.setHeaderText(null);

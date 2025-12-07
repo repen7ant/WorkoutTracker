@@ -18,7 +18,7 @@ public class WorkoutSession {
     @DatabaseField
     private double bodyweight;
 
-    public WorkoutSession() {} // required by ORMLite
+    public WorkoutSession() {}
 
     public WorkoutSession(Date date, double bodyweight) {
         this.date = date;
