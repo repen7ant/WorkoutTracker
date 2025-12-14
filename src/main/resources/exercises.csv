@@ -3,6 +3,7 @@ Bench Press,Chest; Triceps; Shoulders,Press a barbell upward while lying on a fl
 Incline Bench Press,Upper Chest; Triceps; Shoulders,Press a barbell upward on an incline bench.
 Decline Bench Press,Lower Chest; Triceps; Shoulders,Press a barbell upward on a decline bench.
 Dumbbell Bench Press,Chest; Triceps; Shoulders,Press dumbbells upward while lying on a bench.
+Incline Dumbbell Bench Press,Chest; Triceps; Shoulders,Press dumbbells upward while lying on an incline bench.
 Dumbbell Fly,Chest,Open your arms wide and bring dumbbells together above your chest.
 Chest Dip,Chest; Triceps,Lower and raise your body on parallel bars leaning slightly forward.
 Push-Up,Chest; Triceps; Shoulders,Push your body up and down from the floor.
@@ -34,9 +35,8 @@ Leg Curl Lying,Hamstrings,Curl legs while lying face down.
 Standing Calf Raise,Calves,Raise heels while standing.
 Seated Calf Raise,Calves,Raise heels while seated.
 Overhead Press,Shoulders; Triceps,Press barbell overhead while standing.
-Seated Shoulder Press,Shoulders; Triceps,Press dumbbells overhead while seated.
-Arnold Press,Shoulders,Rotate dumbbells while pressing overhead.
-Lateral Raise,Shoulders,Lift dumbbells outward to shoulder height.
+Dumbbell Shoulder Press,Shoulders; Triceps,Press dumbbells overhead while seated.
+Dumbbell Lateral Raise,Shoulders,Lift dumbbells outward to shoulder height.
 Front Raise,Shoulders,Lift weight straight in front to shoulder height.
 Rear Delt Fly,Rear Delts; Upper Back,Raise dumbbells laterally while bent over.
 Machine Shoulder Press,Shoulders,Press weight overhead on a machine.

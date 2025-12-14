@@ -46,7 +46,9 @@
     -fx-border-width: 0 1 1 0;
 }
 
-.table-row-cell:filled {
-    -fx-border-color: derive(black, 40%);
-    -fx-border-width: 0 1 1 0;
+.table-view .column-header .label {
+    -fx-text-fill: black;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto Thin";
 }

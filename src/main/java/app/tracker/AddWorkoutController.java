@@ -7,8 +7,6 @@ import app.model.WorkoutSession;
 import app.service.ExerciseService;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -16,12 +14,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import static java.lang.String.valueOf;
 
 public class AddWorkoutController {
@@ -253,6 +249,9 @@ public class AddWorkoutController {
             var date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             double bodyweight = Double.parseDouble(bodyweightField.getText());
 
+            var session = new WorkoutSession(date, bodyweight);
+            DatabaseHelper.sessionDao.create(session);
+
             for (var node : exercisesContainer.getChildren()) {
                 var exerciseBox = (VBox) node;
 
@@ -280,8 +279,6 @@ public class AddWorkoutController {
                     }
                 }
 
-                var session = new WorkoutSession(date, bodyweight);
-                DatabaseHelper.sessionDao.create(session);
                 var ex = new WorkoutExercise(exerciseName, setsString.toString(), session);
                 DatabaseHelper.exerciseDao.create(ex);
             }
