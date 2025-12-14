@@ -40,6 +40,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation("org.xerial:sqlite-jdbc:3.41.2.2")
     implementation("com.j256.ormlite:ormlite-jdbc:6.1")
+    implementation("org.slf4j:slf4j-simple:2.0.17")
 }
 
 tasks.withType<Test> {

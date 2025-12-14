@@ -2,7 +2,6 @@ package app.database;
 
 import app.model.WorkoutExercise;
 import app.model.WorkoutSession;
-import app.service.ExerciseService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.table.TableUtils;

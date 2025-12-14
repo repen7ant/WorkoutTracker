@@ -65,34 +65,43 @@ public class AddWorkoutController {
 
         var exerciseLabel = new Label("Exercise " + exerciseNumber);
 
+        List<String> exerciseNamesCopy = allExercises.stream()
+                .map(Exercise::name)
+                .toList();
+
         var exerciseCombo = new ComboBox<String>();
         exerciseCombo.setEditable(true);
         exerciseCombo.setPromptText("Enter exercise name");
         exerciseCombo.setMaxWidth(200);
 
-        ObservableList<String> allItems =
-                FXCollections.observableArrayList(
-                        allExercises.stream().map(Exercise::name).collect(Collectors.toList())
-                );
+        exerciseCombo.setItems(FXCollections.observableArrayList(exerciseNamesCopy));
 
-        var filteredItems = new FilteredList<>(allItems, s -> true);
-        exerciseCombo.setItems(filteredItems);
-        exerciseCombo.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-
-            if (exerciseCombo.getValue() != null && newVal.equals(exerciseCombo.getValue()))
+        TextField editor = exerciseCombo.getEditor();
+        editor.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (exerciseCombo.getValue() != null && newVal.equals(exerciseCombo.getValue())) {
                 return;
+            }
 
-            filteredItems.setPredicate(item ->
-                    newVal == null || newVal.isEmpty() ||
-                            item.toLowerCase().contains(newVal.toLowerCase())
-            );
+            var items = exerciseCombo.getItems();
+            items.clear();
+
+            if (newVal == null || newVal.trim().isEmpty()) {
+                items.addAll(exerciseNamesCopy);
+            } else {
+                var filtered = exerciseNamesCopy.stream()
+                        .filter(name -> name.toLowerCase().contains(newVal.toLowerCase()))
+                        .limit(10)
+                        .toList();
+                items.addAll(filtered);
+            }
+
             exerciseCombo.show();
         });
 
-        exerciseCombo.setOnAction(e -> {
-            var selected = exerciseCombo.getSelectionModel().getSelectedItem();
-            if (selected != null)
-                exerciseCombo.getEditor().setText(selected);
+        exerciseCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                editor.setText(newVal);
+            }
         });
 
         var infoBtn = new Button("info");
