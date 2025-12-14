@@ -16,7 +16,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ViewStatisticsController {
 
@@ -24,7 +25,7 @@ public class ViewStatisticsController {
     @FXML private TextField searchField;
     @FXML private TableView<Map<String, String>> table;
 
-    private static final Logger log = Logger.getLogger(ExerciseService.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ViewStatisticsController.class);
     private final ObservableList<Map<String, String>> backingData = FXCollections.observableArrayList();
 
     private List<WorkoutSession> sessions;
@@ -39,7 +40,7 @@ public class ViewStatisticsController {
             sessions = sDao.queryForAll();
             exercises = eDao.queryForAll();
         } catch (SQLException e) {
-            log.severe("statistics page init error: " + e.getMessage());
+            log.error("statistics page init error: {}", e.getMessage(), e);
         }
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

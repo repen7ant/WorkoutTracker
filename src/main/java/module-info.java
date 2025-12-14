@@ -4,6 +4,7 @@ module app.tracker {
     requires javafx.graphics;
     requires java.sql;
     requires ormlite.jdbc;
+    requires org.slf4j;
 
     opens app.tracker to javafx.fxml;
     opens app.model to ormlite.jdbc;
