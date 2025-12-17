@@ -1,14 +1,16 @@
 package app.service;
 
+import app.database.DatabaseHelper;
 import app.database.WorkoutExerciseRepository;
 import app.database.WorkoutSessionRepository;
+import app.model.Exercise;
 import app.model.ExerciseWithSets;
 import app.model.WorkoutExercise;
 import app.model.WorkoutSession;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.TextField;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -41,54 +43,36 @@ public class WorkoutService {
         }
     }
 
-    public boolean hasInvalidSets(List<VBox> exerciseBoxes) {
-        for (var node : exerciseBoxes) {
-
-            var setsContainer = (VBox) node.getChildren().get(3);
-
-            for (var setNode : setsContainer.getChildren()) {
-                var setBox = (HBox) setNode;
-
-                var weightField = (TextField) setBox.getChildren().get(1);
-                var repsField   = (TextField) setBox.getChildren().get(3);
-
-                var weightFilled = !weightField.getText().isBlank();
-                var repsFilled   = !repsField.getText().isBlank();
-
-                if (!weightFilled || !repsFilled) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public String buildSetsString(VBox setsContainer) {
-        var setsString = new StringBuilder();
-
-        for (var setNode : setsContainer.getChildren()) {
-            var setBox = (HBox) setNode;
-
-            var weightFieldSet = (TextField) setBox.getChildren().get(1);
-            var repsFieldSet   = (TextField) setBox.getChildren().get(3);
-
-            if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
-                if (!setsString.isEmpty())
-                    setsString.append("-");
-                setsString
-                        .append(weightFieldSet.getText())
-                        .append("x")
-                        .append(repsFieldSet.getText());
-            }
-        }
-        return setsString.toString();
-    }
-
     public List<WorkoutSession> getAllSessions() throws SQLException {
         return sessionRepo.findAll();
     }
 
     public List<WorkoutExercise> getAllExercises() throws SQLException {
         return exerciseRepo.findAll();
+    }
+
+    public boolean deleteDatabase() throws Exception {
+        DatabaseHelper.close();
+
+        String dbUrl = "jdbc:sqlite:workouts.db";
+        String pathPart = dbUrl.replace("jdbc:sqlite:", "");
+        Path dbPath = Paths.get(pathPart).toAbsolutePath();
+
+        if (Files.exists(dbPath)) {
+            Files.delete(dbPath);
+            DatabaseHelper.init();
+            return true;
+        }
+
+        return false;
+    }
+
+    public List<Exercise> loadExercises() {
+        ExerciseCsvParser.loadExercises();
+        return ExerciseCsvParser.getExercises();
+    }
+
+    public Exercise findExercise(String exerciseName) {
+        return ExerciseCsvParser.findByName(exerciseName);
     }
 }

@@ -1,9 +1,7 @@
 package app.tracker;
 
-import app.database.DatabaseHelper;
 import app.model.Exercise;
 import app.model.ExerciseWithSets;
-import app.service.ExerciseCsvParser;
 
 import app.service.WorkoutService;
 import javafx.collections.FXCollections;
@@ -13,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -35,8 +32,7 @@ public class AddWorkoutController {
 
     @FXML
     public void initialize() {
-        ExerciseCsvParser.loadExercises();
-        allExercises = ExerciseCsvParser.getExercises();
+        allExercises = workoutService.loadExercises();
 
         addWorkoutInfoSection();
         addExerciseSection();
@@ -204,7 +200,7 @@ public class AddWorkoutController {
             return;
         }
 
-        var exercise = ExerciseCsvParser.findByName(exerciseName);
+        var exercise = workoutService.findExercise(exerciseName);
         if (exercise == null) {
             showAlert("Exercise not found");
             return;
@@ -234,7 +230,7 @@ public class AddWorkoutController {
             List<VBox> exerciseBoxes = new ArrayList<>();
             exercisesContainer.getChildren().forEach(node -> exerciseBoxes.add((VBox) node));
 
-            if (workoutService.hasInvalidSets(exerciseBoxes)) {
+            if (hasInvalidSets(exerciseBoxes)) {
                 showAlert("Fill in both weight and reps for each set.");
                 return;
             }
@@ -263,7 +259,7 @@ public class AddWorkoutController {
                 var exerciseName = combo.getEditor().getText();
 
                 var setsContainer = (VBox) exerciseBox.getChildren().get(3);
-                String setsString = workoutService.buildSetsString(setsContainer);
+                String setsString = buildSetsString(setsContainer);
 
                 exList.add(new ExerciseWithSets(exerciseName, setsString));
             }
@@ -288,6 +284,48 @@ public class AddWorkoutController {
         alert.showAndWait();
     }
 
+    public boolean hasInvalidSets(List<VBox> exerciseBoxes) {
+        for (var node : exerciseBoxes) {
+
+            var setsContainer = (VBox) node.getChildren().get(3);
+
+            for (var setNode : setsContainer.getChildren()) {
+                var setBox = (HBox) setNode;
+
+                var weightField = (TextField) setBox.getChildren().get(1);
+                var repsField   = (TextField) setBox.getChildren().get(3);
+
+                var weightFilled = !weightField.getText().isBlank();
+                var repsFilled   = !repsField.getText().isBlank();
+
+                if (!weightFilled || !repsFilled) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String buildSetsString(VBox setsContainer) {
+        var setsString = new StringBuilder();
+
+        for (var setNode : setsContainer.getChildren()) {
+            var setBox = (HBox) setNode;
+
+            var weightFieldSet = (TextField) setBox.getChildren().get(1);
+            var repsFieldSet   = (TextField) setBox.getChildren().get(3);
+
+            if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
+                if (!setsString.isEmpty())
+                    setsString.append("-");
+                setsString
+                        .append(weightFieldSet.getText())
+                        .append("x")
+                        .append(repsFieldSet.getText());
+            }
+        }
+        return setsString.toString();
+    }
 
     @FXML
     private void deleteDB() {
@@ -301,26 +339,19 @@ public class AddWorkoutController {
             return;
         }
 
-        DatabaseHelper.close();
-
         try {
-            var dbUrl = "jdbc:sqlite:workouts.db";
-            var pathPart = dbUrl.replace("jdbc:sqlite:", "");
-            var dbPath = Paths.get(pathPart).toAbsolutePath();
-
-            if (Files.exists(dbPath)) {
-                Files.delete(dbPath);
+            boolean deleted = workoutService.deleteDatabase();
+            if (deleted) {
                 var ok = new Alert(Alert.AlertType.INFORMATION);
                 ok.setTitle("Success");
                 ok.setHeaderText(null);
                 ok.setContentText("All data deleted.");
                 ok.showAndWait();
-                DatabaseHelper.init();
             } else {
                 var warn = new Alert(Alert.AlertType.WARNING);
                 warn.setTitle("File not found");
                 warn.setHeaderText("Database file not found.");
-                warn.setContentText("Expected path:\n" + dbPath);
+                warn.setContentText("Expected path:\n" + Paths.get("workouts.db").toAbsolutePath());
                 warn.showAndWait();
             }
         } catch (Exception ex) {
