@@ -14,6 +14,10 @@ public class ExerciseCsvParser {
     private static final Logger log = LoggerFactory.getLogger(ExerciseCsvParser.class);
 
     public static void loadExercises() {
+        if (!exercises.isEmpty()) {
+            return;
+        }
+
         try (InputStream is = ExerciseCsvParser.class.getResourceAsStream("/exercises.csv")) {
             try (var reader = new BufferedReader(new InputStreamReader(is))) {
                 reader.readLine();
@@ -36,8 +40,12 @@ public class ExerciseCsvParser {
     }
 
     public static Exercise findByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
         return exercises.stream()
-                .filter(e -> e.name().toLowerCase().contains(name.toLowerCase()))
+                .filter(e -> e.name() != null &&
+                        e.name().toLowerCase().contains(name.toLowerCase()))
                 .findFirst().orElse(null);
     }
 }

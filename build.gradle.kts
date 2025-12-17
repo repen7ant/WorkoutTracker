@@ -4,6 +4,7 @@ plugins {
     id("org.javamodularity.moduleplugin") version "1.8.12"
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("org.beryx.jlink") version "2.25.0"
+    id("jacoco")
 }
 
 group = "app.tracker"
@@ -41,6 +42,27 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.41.2.2")
     implementation("com.j256.ormlite:ormlite-jdbc:6.1")
     implementation("org.slf4j:slf4j-simple:2.0.17")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.mockito:mockito-core:5.+")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.withType<Test> {
@@ -54,3 +76,5 @@ jlink {
         name = "app"
     }
 }
+
+
