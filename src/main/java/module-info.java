@@ -8,6 +8,9 @@ module app.tracker {
 
     opens app.tracker to javafx.fxml;
     opens app.model to ormlite.jdbc;
+
     exports app.tracker;
-    exports app.model to ormlite.jdbc;
+    exports app.service;
+    exports app.model;
+    exports app.database;
 }

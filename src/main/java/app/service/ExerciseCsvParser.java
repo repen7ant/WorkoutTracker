@@ -9,12 +9,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExerciseService {
+public class ExerciseCsvParser {
     private static final List<Exercise> exercises = new ArrayList<>();
-    private static final Logger log = LoggerFactory.getLogger(ExerciseService.class);
+    private static final Logger log = LoggerFactory.getLogger(ExerciseCsvParser.class);
 
     public static void loadExercises() {
-        try (InputStream is = ExerciseService.class.getResourceAsStream("/exercises.csv")) {
+        try (InputStream is = ExerciseCsvParser.class.getResourceAsStream("/exercises.csv")) {
             try (var reader = new BufferedReader(new InputStreamReader(is))) {
                 reader.readLine();
                 String line;

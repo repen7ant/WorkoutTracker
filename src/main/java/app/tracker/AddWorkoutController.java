@@ -2,10 +2,10 @@ package app.tracker;
 
 import app.database.DatabaseHelper;
 import app.model.Exercise;
-import app.model.WorkoutExercise;
-import app.model.WorkoutSession;
-import app.service.ExerciseService;
+import app.model.ExerciseWithSets;
+import app.service.ExerciseCsvParser;
 
+import app.service.WorkoutService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -16,19 +16,27 @@ import javafx.scene.layout.VBox;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import static java.lang.String.valueOf;
 
 public class AddWorkoutController {
+
     @FXML private VBox workoutInfoContainer;
     @FXML private VBox exercisesContainer;
+
     private List<Exercise> allExercises;
+    private final WorkoutService workoutService;
+
+    public AddWorkoutController(WorkoutService workoutService) {
+        this.workoutService = workoutService;
+    }
 
     @FXML
     public void initialize() {
-        ExerciseService.loadExercises();
-        allExercises = ExerciseService.getExercises();
+        ExerciseCsvParser.loadExercises();
+        allExercises = ExerciseCsvParser.getExercises();
 
         addWorkoutInfoSection();
         addExerciseSection();
@@ -196,7 +204,7 @@ public class AddWorkoutController {
             return;
         }
 
-        var exercise = ExerciseService.findByName(exerciseName);
+        var exercise = ExerciseCsvParser.findByName(exerciseName);
         if (exercise == null) {
             showAlert("Exercise not found");
             return;
@@ -220,25 +228,20 @@ public class AddWorkoutController {
         alert.showAndWait();
     }
 
-    private void showAlert(String message) {
-        var alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     @FXML
     private void saveWorkout() {
         try {
-            if (hasInvalidSets()) {
+            List<VBox> exerciseBoxes = new ArrayList<>();
+            exercisesContainer.getChildren().forEach(node -> exerciseBoxes.add((VBox) node));
+
+            if (workoutService.hasInvalidSets(exerciseBoxes)) {
                 showAlert("Fill in both weight and reps for each set.");
                 return;
             }
 
             var infoBox = (VBox) workoutInfoContainer.getChildren().get(0);
-
-            var datePicker = (DatePicker)infoBox.getChildren().get(1);
-            var bodyweightField = (TextField)infoBox.getChildren().get(2);
+            var datePicker = (DatePicker) infoBox.getChildren().get(1);
+            var bodyweightField = (TextField) infoBox.getChildren().get(2);
 
             var localDate = datePicker.getValue();
             if (localDate == null) {
@@ -249,8 +252,7 @@ public class AddWorkoutController {
             var date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             double bodyweight = Double.parseDouble(bodyweightField.getText());
 
-            var session = new WorkoutSession(date, bodyweight);
-            DatabaseHelper.sessionDao.create(session);
+            List<ExerciseWithSets> exList = new ArrayList<>();
 
             for (var node : exercisesContainer.getChildren()) {
                 var exerciseBox = (VBox) node;
@@ -261,27 +263,12 @@ public class AddWorkoutController {
                 var exerciseName = combo.getEditor().getText();
 
                 var setsContainer = (VBox) exerciseBox.getChildren().get(3);
-                var setsString = new StringBuilder();
+                String setsString = workoutService.buildSetsString(setsContainer);
 
-                for (var setNode : setsContainer.getChildren()) {
-                    var setBox = (HBox) setNode;
-
-                    var weightFieldSet = (TextField) setBox.getChildren().get(1);
-                    var repsFieldSet = (TextField) setBox.getChildren().get(3);
-
-                    if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
-                        if (!setsString.isEmpty())
-                            setsString.append("-");
-                        setsString
-                                .append(weightFieldSet.getText())
-                                .append("x")
-                                .append(repsFieldSet.getText());
-                    }
-                }
-
-                var ex = new WorkoutExercise(exerciseName, setsString.toString(), session);
-                DatabaseHelper.exerciseDao.create(ex);
+                exList.add(new ExerciseWithSets(exerciseName, setsString));
             }
+
+            workoutService.saveWorkout(date, bodyweight, exList);
 
             var ok = new Alert(Alert.AlertType.INFORMATION);
             ok.setTitle("Success");
@@ -294,29 +281,13 @@ public class AddWorkoutController {
         }
     }
 
-
-    private boolean hasInvalidSets() {
-        for (var node : exercisesContainer.getChildren()) {
-            var exerciseBox = (VBox) node;
-
-            var setsContainer = (VBox) exerciseBox.getChildren().get(3);
-
-            for (var setNode : setsContainer.getChildren()) {
-                var setBox = (HBox) setNode;
-
-                var weightField = (TextField) setBox.getChildren().get(1);
-                var repsField   = (TextField) setBox.getChildren().get(3);
-
-                var weightFilled = !weightField.getText().isBlank();
-                var repsFilled   = !repsField.getText().isBlank();
-
-                if (!weightFilled || !repsFilled) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private void showAlert(String message) {
+        var alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
+
 
     @FXML
     private void deleteDB() {
