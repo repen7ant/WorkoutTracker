@@ -35,6 +35,6 @@
         <TextField fx:id="searchField" promptText="Exercise name..."/>
     </HBox>
 
-    <TableView fx:id="table" prefHeight="800" prefWidth="800" style="-fx-background-color: black;"/>
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" style="-fx-background-color: black;"/>
 
 </VBox>
