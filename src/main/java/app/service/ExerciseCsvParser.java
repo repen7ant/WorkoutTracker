@@ -18,7 +18,7 @@ public class ExerciseCsvParser {
             return;
         }
 
-        try (InputStream is = ExerciseCsvParser.class.getResourceAsStream("/exercises.csv")) {
+        try (InputStream is = openCsv()) {
             try (var reader = new BufferedReader(new InputStreamReader(is))) {
                 reader.readLine();
                 String line;
@@ -47,5 +47,9 @@ public class ExerciseCsvParser {
                 .filter(e -> e.name() != null &&
                         e.name().toLowerCase().contains(name.toLowerCase()))
                 .findFirst().orElse(null);
+    }
+
+    static InputStream openCsv() {
+        return ExerciseCsvParser.class.getResourceAsStream("/exercises.csv");
     }
 }

@@ -9,9 +9,6 @@ module app.tracker {
     opens app.tracker to javafx.fxml;
     opens app.model to ormlite.jdbc;
 
-    opens app.service to org.mockito;
-    opens app.database to org.mockito;
-
     exports app.tracker;
     exports app.service;
     exports app.model;

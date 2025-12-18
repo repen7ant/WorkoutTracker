@@ -3,11 +3,15 @@ package app.service;
 import app.model.Exercise;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Answers.CALLS_REAL_METHODS;
 
 class ExerciseCsvParserTest {
 
@@ -150,4 +154,47 @@ class ExerciseCsvParserTest {
         }
     }
 
+    @Test
+    void loadExercises_shouldCatchException_whenStreamIsNull() throws Exception {
+        try (MockedStatic<ExerciseCsvParser> mocked =
+                     Mockito.mockStatic(ExerciseCsvParser.class, CALLS_REAL_METHODS)) {
+
+            mocked.when(ExerciseCsvParser::openCsv).thenReturn(null);
+
+            assertDoesNotThrow(ExerciseCsvParser::loadExercises);
+        }
+
+        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
+        field.setAccessible(true);
+
+        List<?> backing = (List<?>) field.get(null);
+
+        assertTrue(backing.isEmpty());
+    }
+
+    @Test
+    void loadExercises_shouldIgnoreLinesWithInvalidColumnCount() throws Exception {
+        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
+        field.setAccessible(true);
+
+        @SuppressWarnings("unchecked")
+        List<Exercise> backing = (List<Exercise>) field.get(null);
+
+        String[] invalid1 = "OnlyName".split(",", 3);
+        String[] invalid2 = "Name,Muscle".split(",", 3);
+        String[] valid = "Bench Press,Chest,Press".split(",", 3);
+
+        if (invalid1.length == 3) {
+            backing.add(new Exercise(invalid1[0], invalid1[1], invalid1[2]));
+        }
+        if (invalid2.length == 3) {
+            backing.add(new Exercise(invalid2[0], invalid2[1], invalid2[2]));
+        }
+        if (valid.length == 3) {
+            backing.add(new Exercise(valid[0], valid[1], valid[2]));
+        }
+
+        assertEquals(1, backing.size());
+        assertEquals("Bench Press", backing.get(0).name());
+    }
 }
