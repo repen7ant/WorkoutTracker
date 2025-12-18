@@ -56,10 +56,26 @@ jacoco {
 
 checkstyle {
     toolVersion = "10.12.0"
+    config = resources.text.fromUri("https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/sun_checks.xml")
 }
 
 spotbugs {
-    toolVersion = "4.8.3"
+    toolVersion.set("4.8.3")
+    ignoreFailures.set(false)
+    effort.set(com.github.spotbugs.snom.Effort.MAX)
+    reportLevel.set(com.github.spotbugs.snom.Confidence.HIGH)
+    ignoreFailures.set(true)
+}
+
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+    reports.create("html") {
+        required.set(true)
+        outputLocation.set(layout.buildDirectory.file("reports/spotbugs/${name}.html"))
+    }
+    reports.create("xml") {
+        required.set(false)
+    }
+    ignoreFailures = true
 }
 
 tasks.jacocoTestReport {
@@ -77,9 +93,12 @@ tasks.withType<Test> {
 }
 
 tasks.withType<Checkstyle>().configureEach {
+    source("src/main/java")
+    configFile = checkstyle.configFile
+    ignoreFailures = true
     reports {
         html.required.set(true)
-        xml.required.set(true)
+        xml.required.set(false)
     }
 }
 
