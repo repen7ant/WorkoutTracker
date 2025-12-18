@@ -1,4 +1,5 @@
-name: CI Pipeline
+name: CI
+
 on:
   push:
     branches: [ master, develop ]
@@ -8,48 +9,25 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '21'
-          distribution: 'temurin'
 
-      - name: Make gradlew executable
+      - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Test + Coverage
+      - name: Run tests with coverage
         run: ./gradlew clean test jacocoTestReport
 
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v4
+      - name: Upload JaCoCo report
         if: always()
-        with:
-          name: test-results
-          path: build/reports/tests/test/index.html
-
-      - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: coverage-report
-          path: build/reports/jacoco/test/html/index.html
-
-      - name: Upload All Reports (backup)
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: all-reports
-          path: build/reports/
+          name: jacoco-report
+          path: build/jacocoHtml/
