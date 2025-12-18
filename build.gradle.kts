@@ -5,6 +5,8 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("org.beryx.jlink") version "2.25.0"
     id("jacoco")
+    id("com.github.spotbugs") version "6.0.17"
+    id("checkstyle")
 }
 
 group = "app.tracker"
@@ -52,6 +54,14 @@ jacoco {
     toolVersion = "0.8.12"
 }
 
+checkstyle {
+    toolVersion = "10.12.0"
+}
+
+spotbugs {
+    toolVersion = "4.8.3"
+}
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
@@ -68,6 +78,13 @@ tasks.test {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<Checkstyle>().configureEach {
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
 }
 
 jlink {
