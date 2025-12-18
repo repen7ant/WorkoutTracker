@@ -202,4 +202,100 @@ class StatisticsServiceTest {
         String best = statisticsService.pickBestSet("abc-100x5-xyzx10");
         assertEquals("100x5", best);
     }
+
+    @Test
+    void getAllSessionsSummary_skipsExercisesWithNullSession() throws SQLException {
+        WorkoutExercise orphan = new WorkoutExercise("Bench Press", "100x5", null);
+
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, orphan));
+
+        List<Map<String, Object>> rows = statisticsService.getAllSessionsSummary(null);
+
+        assertEquals(1, rows.size());
+        assertEquals("Bench Press", rows.get(0).get("name"));
+    }
+
+    @Test
+    void getAllSessionsSummary_skipsExercisesFromOtherSession() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e1_s2));
+
+        List<Map<String, Object>> rows = statisticsService.getAllSessionsSummary(null);
+
+        assertEquals(2, rows.size());
+        assertEquals("Bench Press", rows.get(0).get("name"));
+        assertEquals(s1.getDate(), rows.get(0).get("date"));
+    }
+
+    @Test
+    void getAllSessionsSummary_filtersOutByQueryWhenNotMatching() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1, s2));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e2_s1, e1_s2));
+
+        List<Map<String, Object>> rows = statisticsService.getAllSessionsSummary("deadlift");
+
+        assertTrue(rows.isEmpty());
+    }
+
+    @Test
+    void getAllSessionsSummary_queryBlank_doesNotFilter() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1, s2));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e2_s1, e1_s2));
+
+        List<Map<String, Object>> rows = statisticsService.getAllSessionsSummary("   ");
+
+        assertEquals(6, rows.size());
+    }
+
+    @Test
+    void getAllDates_formatsDatesAndReturnsSortedUnique() throws SQLException {
+        WorkoutSession s1copy = new WorkoutSession(s1.getDate(), 81.0);
+        when(workoutService.getAllSessions()).thenReturn(List.of(s2, s1, s1copy));
+
+        Set<String> dates = statisticsService.getAllDates();
+
+        assertEquals(2, dates.size());
+        String any = dates.iterator().next();
+        assertEquals(10, any.length());
+    }
+    @Test
+    void getAllExercisesAllSets_nullQuery_returnsAllByNameGroups() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e2_s1));
+
+        List<Map<String, Object>> rows = statisticsService.getAllExercisesAllSets(null);
+
+        assertEquals(2, rows.size());
+    }
+
+    @Test
+    void getAllExercisesAllSets_blankQuery_doesNotFilter() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1));
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e2_s1));
+
+        List<Map<String, Object>> rows = statisticsService.getAllExercisesAllSets("   ");
+
+        assertEquals(2, rows.size());
+    }
+
+    @Test
+    void pickBestSet_returnsEmpty_whenNullOrBlank() {
+        assertEquals("", statisticsService.pickBestSet(null));
+        assertEquals("", statisticsService.pickBestSet(""));
+        assertEquals("", statisticsService.pickBestSet("   "));
+    }
+
+    @Test
+    void pickBestSet_prefersHeavierWeight() {
+        String best = statisticsService.pickBestSet("100x10-120x1");
+        assertEquals("120x1", best);
+    }
+
+    @Test
+    void pickBestSet_sameWeight_prefersMoreReps() {
+        String best = statisticsService.pickBestSet("100x5-100x8");
+        assertEquals("100x8", best);
+    }
+
 }

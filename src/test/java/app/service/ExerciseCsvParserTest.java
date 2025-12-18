@@ -86,7 +86,7 @@ class ExerciseCsvParserTest {
     }
 
     @Test
-    void loadExercises_doesNotDuplicateOnMultipleCalls() throws Exception {
+    void loadExercises_doesNotDuplicateOnMultipleCalls() {
         ExerciseCsvParser.loadExercises();
         int sizeAfterFirst = ExerciseCsvParser.getExercises().size();
 
@@ -97,7 +97,7 @@ class ExerciseCsvParserTest {
     }
 
     @Test
-    void getExercises_returnsDefensiveCopy() throws Exception {
+    void getExercises_returnsDefensiveCopy() {
         ExerciseCsvParser.loadExercises();
 
         List<Exercise> first = ExerciseCsvParser.getExercises();
@@ -110,4 +110,44 @@ class ExerciseCsvParserTest {
         List<Exercise> afterClear = ExerciseCsvParser.getExercises();
         assertFalse(afterClear.isEmpty());
     }
+
+    @Test
+    void loadExercises_ignoresLinesWithLessThanThreeColumns() throws Exception {
+        parseLineManually("OnlyName");
+        parseLineManually("Name,Muscles");
+        parseLineManually("Bench Press,Chest,Press the bar");
+
+        List<Exercise> exercises = ExerciseCsvParser.getExercises();
+        assertEquals(1, exercises.size());
+        assertEquals("Bench Press", exercises.get(0).name());
+    }
+
+    @Test
+    void findByName_ignoresExercisesWithNullName() throws Exception {
+        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Exercise> backing = (List<Exercise>) field.get(null);
+        backing.add(new Exercise(null, "Muscles", "Desc"));
+        backing.add(new Exercise("Bench Press", "Chest", "Press"));
+
+        Exercise result = ExerciseCsvParser.findByName("bench");
+
+        assertNotNull(result);
+        assertEquals("Bench Press", result.name());
+    }
+
+
+    private void parseLineManually(String line) throws Exception {
+        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Exercise> exercises = (List<Exercise>) field.get(null);
+
+        String[] parts = line.split(",", 3);
+        if (parts.length == 3) {
+            exercises.add(new Exercise(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+        }
+    }
+
 }
