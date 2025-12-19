@@ -2,7 +2,7 @@ package app.tracker;
 
 import app.model.Exercise;
 import app.model.ExerciseWithSets;
-
+import app.service.Navigator;
 import app.service.WorkoutService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -16,18 +16,22 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import static java.lang.String.valueOf;
 
 public class AddWorkoutController {
-
-    @FXML private VBox workoutInfoContainer;
-    @FXML private VBox exercisesContainer;
+    private final Navigator navigator;
+    @FXML
+    private VBox workoutInfoContainer;
+    @FXML
+    private VBox exercisesContainer;
 
     private List<Exercise> allExercises;
     private final WorkoutService workoutService;
 
-    public AddWorkoutController(WorkoutService workoutService) {
+    public AddWorkoutController(WorkoutService workoutService, Navigator navigator) {
         this.workoutService = workoutService;
+        this.navigator = navigator;
     }
 
     @FXML
@@ -65,9 +69,7 @@ public class AddWorkoutController {
 
         var exerciseLabel = new Label("Exercise " + exerciseNumber);
 
-        List<String> exerciseNamesCopy = allExercises.stream()
-                .map(Exercise::name)
-                .toList();
+        List<String> exerciseNamesCopy = allExercises.stream().map(Exercise::name).toList();
 
         var exerciseCombo = new ComboBox<String>();
         exerciseCombo.setEditable(true);
@@ -88,10 +90,7 @@ public class AddWorkoutController {
             if (newVal == null || newVal.trim().isEmpty()) {
                 items.addAll(exerciseNamesCopy);
             } else {
-                var filtered = exerciseNamesCopy.stream()
-                        .filter(name -> name.toLowerCase().contains(newVal.toLowerCase()))
-                        .limit(10)
-                        .toList();
+                var filtered = exerciseNamesCopy.stream().filter(name -> name.toLowerCase().contains(newVal.toLowerCase())).limit(10).toList();
                 items.addAll(filtered);
             }
 
@@ -131,13 +130,7 @@ public class AddWorkoutController {
         var setButtons = new HBox(10, addSetBtn, removeSetBtn);
         setButtons.setAlignment(Pos.CENTER);
 
-        exerciseBox.getChildren().addAll(
-                exerciseLabel,
-                exerciseInput,
-                new Label("Sets"),
-                setsContainer,
-                setButtons
-        );
+        exerciseBox.getChildren().addAll(exerciseLabel, exerciseInput, new Label("Sets"), setsContainer, setButtons);
 
         exercisesContainer.getChildren().add(exerciseBox);
     }
@@ -270,7 +263,7 @@ public class AddWorkoutController {
             ok.setTitle("Success");
             ok.setContentText("Workout saved");
             ok.showAndWait();
-            MainApplication.getInstance().showAddWorkout();
+            navigator.showAddWorkout();
 
         } catch (Exception e) {
             showAlert("Fields are either not filled, or not valid.");
@@ -293,10 +286,10 @@ public class AddWorkoutController {
                 var setBox = (HBox) setNode;
 
                 var weightField = (TextField) setBox.getChildren().get(1);
-                var repsField   = (TextField) setBox.getChildren().get(3);
+                var repsField = (TextField) setBox.getChildren().get(3);
 
                 var weightFilled = !weightField.getText().isBlank();
-                var repsFilled   = !repsField.getText().isBlank();
+                var repsFilled = !repsField.getText().isBlank();
 
                 if (!weightFilled || !repsFilled) {
                     return true;
@@ -313,15 +306,11 @@ public class AddWorkoutController {
             var setBox = (HBox) setNode;
 
             var weightFieldSet = (TextField) setBox.getChildren().get(1);
-            var repsFieldSet   = (TextField) setBox.getChildren().get(3);
+            var repsFieldSet = (TextField) setBox.getChildren().get(3);
 
             if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
-                if (!setsString.isEmpty())
-                    setsString.append("-");
-                setsString
-                        .append(weightFieldSet.getText())
-                        .append("x")
-                        .append(repsFieldSet.getText());
+                if (!setsString.isEmpty()) setsString.append("-");
+                setsString.append(weightFieldSet.getText()).append("x").append(repsFieldSet.getText());
             }
         }
         return setsString.toString();
@@ -363,7 +352,13 @@ public class AddWorkoutController {
         }
     }
 
-    @FXML private void goToAddWorkout() throws Exception { app.tracker.MainApplication.getInstance().showAddWorkout(); }
-    @FXML private void goToViewStatistics() throws Exception { app.tracker.MainApplication.getInstance().showViewStatistics(); }
-    @FXML private void goToViewGraphs() throws Exception { app.tracker.MainApplication.getInstance().showViewGraphs(); }
+    @FXML
+    private void goToViewStatistics() throws Exception {
+        navigator.showViewStatistics();
+    }
+
+    @FXML
+    private void goToViewGraphs() throws Exception {
+        navigator.showViewGraphs();
+    }
 }

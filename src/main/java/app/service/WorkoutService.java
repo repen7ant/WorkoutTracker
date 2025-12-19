@@ -20,25 +20,18 @@ public class WorkoutService {
     private final WorkoutSessionRepository sessionRepo;
     private final WorkoutExerciseRepository exerciseRepo;
 
-    public WorkoutService(WorkoutSessionRepository sessionRepo,
-                          WorkoutExerciseRepository exerciseRepo) {
+    public WorkoutService(WorkoutSessionRepository sessionRepo, WorkoutExerciseRepository exerciseRepo) {
         this.sessionRepo = sessionRepo;
         this.exerciseRepo = exerciseRepo;
     }
 
-    public void saveWorkout(Date date,
-                            double bodyweight,
-                            List<ExerciseWithSets> exercises) throws SQLException {
+    public void saveWorkout(Date date, double bodyweight, List<ExerciseWithSets> exercises) throws SQLException {
 
         WorkoutSession session = new WorkoutSession(date, bodyweight);
         sessionRepo.save(session);
 
         for (ExerciseWithSets ex : exercises) {
-            WorkoutExercise we = new WorkoutExercise(
-                    ex.name(),
-                    ex.setsString(),
-                    session
-            );
+            WorkoutExercise we = new WorkoutExercise(ex.name(), ex.setsString(), session);
             exerciseRepo.save(we);
         }
     }

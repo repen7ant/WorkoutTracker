@@ -1,33 +1,26 @@
 package app.tracker;
 
-import app.database.*;
-
+import app.database.DatabaseHelper;
+import app.database.OrmLiteWorkoutExerciseRepository;
+import app.database.OrmLiteWorkoutSessionRepository;
+import app.service.Navigator;
 import app.service.StatisticsService;
 import app.service.WorkoutService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class MainApplication extends Application {
-    public static MainApplication getInstance() {
-        if (INSTANCE == null) {
-            throw new IllegalStateException("Application not started");
-        }
-        return INSTANCE;
-    }
-
-    private static MainApplication INSTANCE;
+public class MainApplication extends Application implements Navigator {
     private Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
-        INSTANCE = this;
         primaryStage = stage;
         DatabaseHelper.init();
 
@@ -49,7 +42,7 @@ public class MainApplication extends Application {
         var loader = new FXMLLoader(MainApplication.class.getResource("add-workout-view.fxml"));
         loader.setControllerFactory(c -> {
             if (c == AddWorkoutController.class) {
-                return new AddWorkoutController(workoutService);
+                return new AddWorkoutController(workoutService, this);
             }
             throw new IllegalStateException("Unknown controller class: " + c);
         });
@@ -71,7 +64,7 @@ public class MainApplication extends Application {
         var loader = new FXMLLoader(MainApplication.class.getResource("view-statistics-view.fxml"));
         loader.setControllerFactory(c -> {
             if (c == ViewStatisticsController.class) {
-                return new ViewStatisticsController(statisticsService);
+                return new ViewStatisticsController(statisticsService, this);
             }
             throw new IllegalStateException("Unknown controller class: " + c);
         });
@@ -84,6 +77,14 @@ public class MainApplication extends Application {
 
     public void showViewGraphs() throws IOException {
         var loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
+
+        loader.setControllerFactory(c -> {
+            if (c == ViewGraphsController.class) {
+                return new ViewGraphsController(this);
+            }
+            throw new IllegalStateException("Unknown controller class: " + c);
+        });
+
         var scene = new Scene(loader.load(), 900, 900);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);

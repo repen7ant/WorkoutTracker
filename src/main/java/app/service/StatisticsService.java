@@ -138,7 +138,8 @@ public class StatisticsService {
                     bestR = r;
                     best = w + "x" + r;
                 }
-            } catch (NumberFormatException ignore) {}
+            } catch (NumberFormatException ignore) {
+            }
         }
         return best;
     }

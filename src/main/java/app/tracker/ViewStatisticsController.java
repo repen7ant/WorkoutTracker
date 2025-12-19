@@ -1,5 +1,6 @@
 package app.tracker;
 
+import app.service.Navigator;
 import app.service.StatisticsService;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -16,26 +17,27 @@ import java.util.Map;
 import java.util.Set;
 
 public class ViewStatisticsController {
-    @FXML private ComboBox<String> modeCombo;
-    @FXML private TextField searchField;
-    @FXML private TableView<Map<String, Object>> table;
+    private final Navigator navigator;
+
+    @FXML
+    private ComboBox<String> modeCombo;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private TableView<Map<String, Object>> table;
 
     private static final Logger log = LoggerFactory.getLogger(ViewStatisticsController.class);
     private final ObservableList<Map<String, Object>> backingData = FXCollections.observableArrayList();
     private final StatisticsService statisticsService;
 
-    public ViewStatisticsController(StatisticsService statisticsService) {
+    public ViewStatisticsController(StatisticsService statisticsService, Navigator navigator) {
         this.statisticsService = statisticsService;
+        this.navigator = navigator;
     }
 
     @FXML
     public void initialize() {
-        modeCombo.getItems().addAll(
-                "1) Bodyweight by date",
-                "2) All exercises, all sets",
-                "3) All exercises, best set",
-                "4) All sessions summary"
-        );
+        modeCombo.getItems().addAll("1) Bodyweight by date", "2) All exercises, all sets", "3) All exercises, best set", "4) All sessions summary");
         modeCombo.getSelectionModel().selectFirst();
 
         modeCombo.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> reloadTable());
@@ -68,9 +70,7 @@ public class ViewStatisticsController {
     private <T> TableColumn<Map<String, Object>, T> col(String title, String key, int prefWidth, Class<T> type) {
         TableColumn<Map<String, Object>, T> c = new TableColumn<>(title);
         c.setPrefWidth(prefWidth);
-        c.setCellValueFactory(data ->
-                new SimpleObjectProperty<>(type.cast(data.getValue().get(key)))
-        );
+        c.setCellValueFactory(data -> new SimpleObjectProperty<>(type.cast(data.getValue().get(key))));
         return c;
     }
 
@@ -137,7 +137,13 @@ public class ViewStatisticsController {
         backingData.addAll(statisticsService.getAllSessionsSummary(query));
     }
 
-    @FXML private void goToAddWorkout() throws Exception { MainApplication.getInstance().showAddWorkout(); }
-    @FXML private void goToViewStatistics() throws Exception { MainApplication.getInstance().showViewStatistics(); }
-    @FXML private void goToViewGraphs() throws Exception { MainApplication.getInstance().showViewGraphs(); }
+    @FXML
+    private void goToAddWorkout() throws Exception {
+        navigator.showAddWorkout();
+    }
+
+    @FXML
+    private void goToViewGraphs() throws Exception {
+        navigator.showViewGraphs();
+    }
 }
