@@ -192,18 +192,6 @@ class StatisticsServiceTest {
     }
 
     @Test
-    void pickBestSet_allInvalid_returnsEmpty() {
-        String best = statisticsService.pickBestSet("ax5-100x-10z-5-xxx");
-        assertEquals("", best);
-    }
-
-    @Test
-    void pickBestSet_mixedValidAndInvalid_ignoresInvalid() {
-        String best = statisticsService.pickBestSet("abc-100x5-xyzx10");
-        assertEquals("100x5", best);
-    }
-
-    @Test
     void getAllSessionsSummary_skipsExercisesWithNullSession() throws SQLException {
         WorkoutExercise orphan = new WorkoutExercise("Bench Press", "100x5", null);
 
@@ -278,24 +266,4 @@ class StatisticsServiceTest {
 
         assertEquals(2, rows.size());
     }
-
-    @Test
-    void pickBestSet_returnsEmpty_whenNullOrBlank() {
-        assertEquals("", statisticsService.pickBestSet(null));
-        assertEquals("", statisticsService.pickBestSet(""));
-        assertEquals("", statisticsService.pickBestSet("   "));
-    }
-
-    @Test
-    void pickBestSet_prefersHeavierWeight() {
-        String best = statisticsService.pickBestSet("100x10-120x1");
-        assertEquals("120x1", best);
-    }
-
-    @Test
-    void pickBestSet_sameWeight_prefersMoreReps() {
-        String best = statisticsService.pickBestSet("100x5-100x8");
-        assertEquals("100x8", best);
-    }
-
 }

@@ -78,7 +78,7 @@ public class StatisticsService {
 
             for (WorkoutExercise ex : exList) {
                 String d = df.format(ex.getSession().getDate());
-                row.put(d, pickBestSet(ex.getSetsString()));
+                row.put(d, SetParser.pickBestSet(ex.getSetsString()));
             }
             rows.add(row);
         }
@@ -121,26 +121,5 @@ public class StatisticsService {
         return exercises.stream()
                 .filter(ex -> ex.getName().toLowerCase().contains(lower))
                 .toList();
-    }
-
-    public String pickBestSet(String sets) {
-        if (sets == null || sets.isBlank()) return "";
-        String best = "";
-        int bestW = -1, bestR = -1;
-        for (String part : sets.split("-")) {
-            String[] wr = part.split("x");
-            if (wr.length != 2) continue;
-            try {
-                int w = Integer.parseInt(wr[0]);
-                int r = Integer.parseInt(wr[1]);
-                if (w > bestW || (w == bestW && r > bestR)) {
-                    bestW = w;
-                    bestR = r;
-                    best = w + "x" + r;
-                }
-            } catch (NumberFormatException ignore) {
-            }
-        }
-        return best;
     }
 }
