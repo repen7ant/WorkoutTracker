@@ -15,7 +15,14 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 public class MainApplication extends Application {
-    public static MainApplication INSTANCE;
+    public static MainApplication getInstance() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException("Application not started");
+        }
+        return INSTANCE;
+    }
+
+    private static MainApplication INSTANCE;
     private Stage primaryStage;
 
     @Override

@@ -270,7 +270,7 @@ public class AddWorkoutController {
             ok.setTitle("Success");
             ok.setContentText("Workout saved");
             ok.showAndWait();
-            MainApplication.INSTANCE.showAddWorkout();
+            MainApplication.getInstance().showAddWorkout();
 
         } catch (Exception e) {
             showAlert("Fields are either not filled, or not valid.");
@@ -363,7 +363,7 @@ public class AddWorkoutController {
         }
     }
 
-    @FXML private void goToAddWorkout() throws Exception { app.tracker.MainApplication.INSTANCE.showAddWorkout(); }
-    @FXML private void goToViewStatistics() throws Exception { app.tracker.MainApplication.INSTANCE.showViewStatistics(); }
-    @FXML private void goToViewGraphs() throws Exception { app.tracker.MainApplication.INSTANCE.showViewGraphs(); }
+    @FXML private void goToAddWorkout() throws Exception { app.tracker.MainApplication.getInstance().showAddWorkout(); }
+    @FXML private void goToViewStatistics() throws Exception { app.tracker.MainApplication.getInstance().showViewStatistics(); }
+    @FXML private void goToViewGraphs() throws Exception { app.tracker.MainApplication.getInstance().showViewGraphs(); }
 }

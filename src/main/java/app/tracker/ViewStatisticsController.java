@@ -137,7 +137,7 @@ public class ViewStatisticsController {
         backingData.addAll(statisticsService.getAllSessionsSummary(query));
     }
 
-    @FXML private void goToAddWorkout() throws Exception { MainApplication.INSTANCE.showAddWorkout(); }
-    @FXML private void goToViewStatistics() throws Exception { MainApplication.INSTANCE.showViewStatistics(); }
-    @FXML private void goToViewGraphs() throws Exception { MainApplication.INSTANCE.showViewGraphs(); }
+    @FXML private void goToAddWorkout() throws Exception { MainApplication.getInstance().showAddWorkout(); }
+    @FXML private void goToViewStatistics() throws Exception { MainApplication.getInstance().showViewStatistics(); }
+    @FXML private void goToViewGraphs() throws Exception { MainApplication.getInstance().showViewGraphs(); }
 }

@@ -4,6 +4,7 @@ import app.model.Exercise;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class ExerciseCsvParser {
         }
 
         try (InputStream is = openCsv()) {
-            try (var reader = new BufferedReader(new InputStreamReader(is))) {
+            try (var reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
                 reader.readLine();
                 String line;
                 while ((line = reader.readLine()) != null) {
