@@ -3,10 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="app.tracker.ViewGraphsController"
-      style="-fx-background-color: black;"
-      alignment="TOP_CENTER">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="app.tracker.ViewGraphsController"
+      style="-fx-background-color: black;" alignment="TOP_CENTER">
     <HBox style="-fx-background-color: rgba(73, 77, 78, 0.5);
                             -fx-padding: 10px;
                             -fx-background-radius: 15px;"
@@ -25,6 +23,9 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label text="Графики прогресса" textFill="azure" style="-fx-font-size: 24;"/>
-    <Label fx:id="graphsLabel" textFill="white" style="-fx-font-size: 16;"/>
+    <VBox spacing="20" alignment="CENTER" style="-fx-padding: 20;">
+        <ComboBox fx:id="chartCombo" promptText="Select chart" prefWidth="300"/>
+        <Pane fx:id="chartPane" prefWidth="800" prefHeight="500" style="-fx-background-color: black;"/>
+        <Label fx:id="statusLabel"/>
+    </VBox>
 </VBox>

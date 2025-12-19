@@ -3,6 +3,7 @@ package app.tracker;
 import app.database.DatabaseHelper;
 import app.database.OrmLiteWorkoutExerciseRepository;
 import app.database.OrmLiteWorkoutSessionRepository;
+import app.service.GraphsService;
 import app.service.Navigator;
 import app.service.StatisticsService;
 import app.service.WorkoutService;
@@ -75,12 +76,18 @@ public class MainApplication extends Application implements Navigator {
         primaryStage.setTitle("Statistics");
     }
 
-    public void showViewGraphs() throws IOException {
+    public void showViewGraphs() throws IOException, SQLException {
+        var cs = DatabaseHelper.connectionSource();
+        var sessionRepo = new OrmLiteWorkoutSessionRepository(cs);
+        var exerciseRepo = new OrmLiteWorkoutExerciseRepository(cs);
+        var workoutService = new WorkoutService(sessionRepo, exerciseRepo);
+        var graphsService = new GraphsService(workoutService);
+
         var loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
 
         loader.setControllerFactory(c -> {
             if (c == ViewGraphsController.class) {
-                return new ViewGraphsController(this);
+                return new ViewGraphsController(graphsService, this);
             }
             throw new IllegalStateException("Unknown controller class: " + c);
         });
