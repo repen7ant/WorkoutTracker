@@ -136,10 +136,10 @@ class GraphsServiceTest {
 
         when(workoutService.getAllExercises()).thenReturn(List.of(invalidWeight, validExercise));
 
-        List<Pair<Date, Double>> data = graphsService.getExerciseData(null); // null = все упражнения
+        List<Pair<Date, Double>> data = graphsService.getExerciseData(null);
 
         assertEquals(1, data.size());
-        assertEquals(140.0, data.get(0).getValue()); // ← Только вес
+        assertEquals(140.0, data.get(0).getValue());
     }
 
     @Test
@@ -150,5 +150,45 @@ class GraphsServiceTest {
         List<Pair<Date, Double>> data = graphsService.getExerciseData("Bench Press");
 
         assertTrue(data.isEmpty());
+    }
+
+    @Test
+    void getBodyweightData_returnsDateAndBodyweight() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1, s2));
+
+        List<Pair<Date, Double>> data = graphsService.getBodyweightData();
+
+        assertEquals(2, data.size());
+        assertEquals(s1.getDate(), data.get(0).getKey());
+        assertEquals(80.0, data.get(0).getValue());
+        assertEquals(s2.getDate(), data.get(1).getKey());
+        assertEquals(82.0, data.get(1).getValue());
+    }
+
+    @Test
+    void getBodyweightData_emptySessions_returnsEmptyList() throws SQLException {
+        when(workoutService.getAllSessions()).thenReturn(List.of());
+
+        List<Pair<Date, Double>> data = graphsService.getBodyweightData();
+
+        assertTrue(data.isEmpty());
+    }
+
+    @Test
+    void getExerciseNames_returnsSortedDistinctNames() throws SQLException {
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1, e2_s1, e1_s2));
+
+        List<String> names = graphsService.getExerciseNames();
+
+        assertEquals(List.of("Bench Press", "Squat"), names);
+    }
+
+    @Test
+    void getExerciseNames_emptyExercises_returnsEmptyList() throws SQLException {
+        when(workoutService.getAllExercises()).thenReturn(List.of());
+
+        List<String> names = graphsService.getExerciseNames();
+
+        assertTrue(names.isEmpty());
     }
 }
