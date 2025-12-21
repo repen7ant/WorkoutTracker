@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 @DatabaseTable(tableName = "workout_sessions")
-public class WorkoutSession {
+public final class WorkoutSession {
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -20,12 +20,20 @@ public class WorkoutSession {
 
     public WorkoutSession() {}
 
-    public WorkoutSession(Date date, double bodyweight) {
+    public WorkoutSession(final Date date, final double bodyweight) {
         this.date = date;
         this.bodyweight = bodyweight;
     }
 
-    public int getId() { return id; }
-    public Date getDate() { return date; }
-    public double getBodyweight() { return bodyweight; }
+    public int getId() {
+        return id;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public double getBodyweight() {
+        return bodyweight;
+    }
 }

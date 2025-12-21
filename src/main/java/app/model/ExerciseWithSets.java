@@ -1,4 +1,4 @@
 package app.model;
 
-public record ExerciseWithSets(String name, String setsString) {}
-
+public record ExerciseWithSets(String name, String setsString) {
+}

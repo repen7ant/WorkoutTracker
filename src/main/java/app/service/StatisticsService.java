@@ -5,13 +5,20 @@ import app.model.WorkoutSession;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class StatisticsService {
+
+public final class StatisticsService {
+
     private final WorkoutService workoutService;
 
-    public StatisticsService(WorkoutService workoutService) {
+    public StatisticsService(final WorkoutService workoutService) {
         this.workoutService = workoutService;
     }
 
@@ -19,18 +26,20 @@ public class StatisticsService {
         List<WorkoutSession> sessions = workoutService.getAllSessions();
         List<Map<String, Object>> rows = new ArrayList<>();
 
-        for (WorkoutSession s : sessions) {
+        for (WorkoutSession session : sessions) {
             Map<String, Object> row = new HashMap<>();
-            row.put("id", s.getId());
-            row.put("date", s.getDate());
-            row.put("bw", s.getBodyweight());
+            row.put("id", session.getId());
+            row.put("date", session.getDate());
+            row.put("bw", session.getBodyweight());
             rows.add(row);
         }
         return rows;
     }
 
-    public List<Map<String, Object>> getAllExercisesAllSets(String query) throws SQLException {
-        List<WorkoutExercise> filtered = filterExercisesByName(workoutService.getAllExercises(), query);
+    public List<Map<String, Object>> getAllExercisesAllSets(
+            final String query) throws SQLException {
+        List<WorkoutExercise> filtered = filterExercisesByName(
+                workoutService.getAllExercises(), query);
         List<WorkoutSession> sessions = workoutService.getAllSessions();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -49,16 +58,18 @@ public class StatisticsService {
             row.put("name", entry.getKey());
 
             for (WorkoutExercise ex : exList) {
-                String d = df.format(ex.getSession().getDate());
-                row.put(d, ex.getSetsString());
+                String dateStr = df.format(ex.getSession().getDate());
+                row.put(dateStr, ex.getSetsString());
             }
             rows.add(row);
         }
         return rows;
     }
 
-    public List<Map<String, Object>> getAllExercisesBestSet(String query) throws SQLException {
-        List<WorkoutExercise> filtered = filterExercisesByName(workoutService.getAllExercises(), query);
+    public List<Map<String, Object>> getAllExercisesBestSet(
+            final String query) throws SQLException {
+        List<WorkoutExercise> filtered = filterExercisesByName(
+                workoutService.getAllExercises(), query);
         List<WorkoutSession> sessions = workoutService.getAllSessions();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -77,30 +88,38 @@ public class StatisticsService {
             row.put("name", entry.getKey());
 
             for (WorkoutExercise ex : exList) {
-                String d = df.format(ex.getSession().getDate());
-                row.put(d, SetParser.pickBestSet(ex.getSetsString()));
+                String dateStr = df.format(ex.getSession().getDate());
+                row.put(dateStr, SetParser.pickBestSet(ex.getSetsString()));
             }
             rows.add(row);
         }
         return rows;
     }
 
-    public List<Map<String, Object>> getAllSessionsSummary(String query) throws SQLException {
+    public List<Map<String, Object>> getAllSessionsSummary(
+            final String query) throws SQLException {
         List<WorkoutSession> sessions = workoutService.getAllSessions();
         List<WorkoutExercise> exercises = workoutService.getAllExercises();
 
         List<Map<String, Object>> rows = new ArrayList<>();
-        for (WorkoutSession s : sessions) {
-            for (WorkoutExercise ex : exercises) {
-                if (ex.getSession() == null || ex.getSession().getId() != s.getId()) continue;
-                if (query != null && !query.isBlank() &&
-                        !ex.getName().toLowerCase().contains(query.toLowerCase())) continue;
+        for (WorkoutSession session : sessions) {
+            for (WorkoutExercise exercise : exercises) {
+                if (exercise.getSession() == null
+                        || exercise.getSession().getId() != session.getId()) {
+                    continue;
+                }
+                if (query != null && !query.isBlank()
+                        && !exercise.getName()
+                        .toLowerCase()
+                        .contains(query.toLowerCase())) {
+                    continue;
+                }
 
                 Map<String, Object> row = new HashMap<>();
-                row.put("sid", s.getId());
-                row.put("date", s.getDate());
-                row.put("name", ex.getName());
-                row.put("sets", ex.getSetsString());
+                row.put("sid", session.getId());
+                row.put("date", session.getDate());
+                row.put("name", exercise.getName());
+                row.put("sets", exercise.getSetsString());
                 rows.add(row);
             }
         }
@@ -115,11 +134,17 @@ public class StatisticsService {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private List<WorkoutExercise> filterExercisesByName(List<WorkoutExercise> exercises, String query) {
-        if (query == null || query.isBlank()) return exercises;
-        String lower = query.toLowerCase();
+    private List<WorkoutExercise> filterExercisesByName(
+            final List<WorkoutExercise> exercises,
+            final String query) {
+        if (query == null || query.isBlank()) {
+            return exercises;
+        }
+        String lowerQuery = query.toLowerCase();
         return exercises.stream()
-                .filter(ex -> ex.getName().toLowerCase().contains(lower))
+                .filter(ex -> ex.getName()
+                        .toLowerCase()
+                        .contains(lowerQuery))
                 .toList();
     }
 }

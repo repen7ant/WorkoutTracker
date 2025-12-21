@@ -9,16 +9,19 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 import java.util.List;
 
-public class OrmLiteWorkoutExerciseRepository implements WorkoutExerciseRepository {
+public final class OrmLiteWorkoutExerciseRepository
+        implements WorkoutExerciseRepository {
+
     private final Dao<WorkoutExercise, Integer> dao;
 
-    public OrmLiteWorkoutExerciseRepository(JdbcPooledConnectionSource cs) throws SQLException {
+    public OrmLiteWorkoutExerciseRepository(
+            final JdbcPooledConnectionSource cs) throws SQLException {
         this.dao = DaoManager.createDao(cs, WorkoutExercise.class);
         TableUtils.createTableIfNotExists(cs, WorkoutExercise.class);
     }
 
     @Override
-    public void save(WorkoutExercise exercise) throws SQLException {
+    public void save(final WorkoutExercise exercise) throws SQLException {
         dao.create(exercise);
     }
 

@@ -11,47 +11,66 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseCsvParser {
-    private static final List<Exercise> exercises = new ArrayList<>();
-    private static final Logger log = LoggerFactory.getLogger(ExerciseCsvParser.class);
+public final class ExerciseCsvParser {
+
+    private static final List<Exercise> EXERCISES = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExerciseCsvParser.class);
+    private static final int CSV_PARTS_COUNT = 3;
+
+    private ExerciseCsvParser() {
+    }
 
     public static void loadExercises() {
-        if (!exercises.isEmpty()) {
+        if (!EXERCISES.isEmpty()) {
             return;
         }
-
         try (InputStream is = openCsv()) {
-            try (var reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            if (is == null) {
+                LOGGER.warn("exercises.csv not found");
+                return;
+            }
+            try (var reader = new BufferedReader(
+                    new InputStreamReader(is, StandardCharsets.UTF_8))) {
                 reader.readLine();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",", 3);
-                    if (parts.length == 3) {
-                        exercises.add(new Exercise(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+                    String[] parts = line.split(",", CSV_PARTS_COUNT);
+                    if (parts.length == CSV_PARTS_COUNT) {
+                        EXERCISES.add(new Exercise(
+                                parts[0].trim(),
+                                parts[1].trim(),
+                                parts[2].trim()
+                        ));
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("error parsing exercises: {}", e.getMessage(), e);
+            LOGGER.error("error parsing exercises: {}", e.getMessage(), e);
         }
     }
 
     public static List<Exercise> getExercises() {
-        if (exercises.isEmpty()) loadExercises();
-        return new ArrayList<>(exercises);
+        if (EXERCISES.isEmpty()) {
+            loadExercises();
+        }
+        return new ArrayList<>(EXERCISES);
     }
 
-    public static Exercise findByName(String name) {
+    public static Exercise findByName(final String name) {
         if (name == null || name.trim().isEmpty()) {
             return null;
         }
-        return exercises.stream()
-                .filter(e -> e.name() != null &&
-                        e.name().toLowerCase().contains(name.toLowerCase()))
-                .findFirst().orElse(null);
+        return EXERCISES.stream()
+                .filter(e -> e.name() != null)
+                .filter(e -> e.name()
+                        .toLowerCase()
+                        .contains(name.toLowerCase()))
+                .findFirst()
+                .orElse(null);
     }
 
     static InputStream openCsv() {
-        return ExerciseCsvParser.class.getResourceAsStream("/exercises.csv");
+        return ExerciseCsvParser.class
+                .getResourceAsStream("/exercises.csv");
     }
 }

@@ -4,15 +4,19 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseHelper {
+public final class DatabaseHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseHelper.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(DatabaseHelper.class);
     private static final String DB_URL = "jdbc:sqlite:workouts.db";
 
     private static JdbcPooledConnectionSource connectionSource;
 
     private static WorkoutSessionRepository workoutSessionRepository;
     private static WorkoutExerciseRepository workoutExerciseRepository;
+
+    private DatabaseHelper() {
+    }
 
     public static void init() {
         try {

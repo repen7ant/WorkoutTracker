@@ -25,7 +25,7 @@
 
     <VBox spacing="20" alignment="CENTER" style="-fx-padding: 20;">
         <ComboBox fx:id="chartCombo" promptText="Select chart" prefWidth="300"/>
-        <Pane fx:id="chartPane" prefWidth="800" prefHeight="500" style="-fx-background-color: black;"/>
+        <Pane fx:id="chartPane" prefWidth="1100" prefHeight="700" style="-fx-background-color: black;"/>
         <Label fx:id="statusLabel"/>
     </VBox>
 </VBox>

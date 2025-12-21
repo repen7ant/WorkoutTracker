@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class ViewGraphsController {
+public final class ViewGraphsController {
+
     @FXML private ComboBox<String> chartCombo;
     @FXML private Pane chartPane;
     @FXML private Label statusLabel;
@@ -26,9 +27,12 @@ public class ViewGraphsController {
     private final Navigator navigator;
     private final GraphsService graphsService;
     private LineChart<String, Number> lineChart;
-    private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FMT =
+            new SimpleDateFormat("yyyy-MM-dd");
 
-    public ViewGraphsController(GraphsService graphsService, Navigator navigator) {
+    public ViewGraphsController(
+            final GraphsService graphsService,
+            final Navigator navigator) {
         this.navigator = navigator;
         this.graphsService = graphsService;
     }
@@ -42,7 +46,7 @@ public class ViewGraphsController {
         yAxis.setLabel("Weight (kg)");
 
         lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setPrefSize(800, 500);
+        lineChart.setPrefSize(1100, 700);
         lineChart.setAnimated(false);
         lineChart.setLegendVisible(false);
         chartPane.getChildren().add(lineChart);
@@ -61,7 +65,9 @@ public class ViewGraphsController {
 
     private void reloadChart() {
         String selected = chartCombo.getValue();
-        if (selected == null) return;
+        if (selected == null) {
+            return;
+        }
 
         try {
             lineChart.getData().clear();
@@ -86,20 +92,23 @@ public class ViewGraphsController {
                 .sorted(Comparator.comparing(Pair::getKey))
                 .forEach(p -> {
                     String dateStr = DATE_FMT.format(p.getKey());
-                    series.getData().add(new XYChart.Data<>(dateStr, p.getValue()));
+                    series.getData().add(
+                            new XYChart.Data<>(dateStr, p.getValue()));
                     values.add(p.getValue());
                 });
 
         NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
-        adjustYAxis(yAxis, values, 0.5);
+        adjustYAxis(yAxis, values, PADDING_BODYWEIGHT);
 
         lineChart.getData().add(series);
     }
 
-    private void loadExerciseChart(String exerciseName) throws SQLException {
+    private void loadExerciseChart(final String exerciseName)
+            throws SQLException {
         var data = graphsService.getExerciseData(exerciseName);
 
-        XYChart.Series<String, Number> weightSeries = new XYChart.Series<>();
+        XYChart.Series<String, Number> weightSeries =
+                new XYChart.Series<>();
         weightSeries.setName("Weight (kg)");
 
         List<Double> weightValues = new ArrayList<>();
@@ -110,22 +119,36 @@ public class ViewGraphsController {
                     String dateStr = DATE_FMT.format(p.getKey());
                     double weight = p.getValue().getKey();
                     weightValues.add(weight);
-                    weightSeries.getData().add(new XYChart.Data<>(dateStr, weight));
+                    weightSeries.getData().add(
+                            new XYChart.Data<>(dateStr, weight));
                 });
 
         NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
-        adjustYAxis(yAxis, weightValues, 2.5);
+        adjustYAxis(yAxis, weightValues, PADDING_EXERCISE);
         yAxis.setLabel("Weight (kg)");
 
         lineChart.getData().add(weightSeries);
     }
 
+    private static final double PADDING_BODYWEIGHT = 0.5;
+    private static final double PADDING_EXERCISE = 2.5;
 
-    private void adjustYAxis(NumberAxis axis, List<? extends Number> values, double padding) {
-        if (values.isEmpty()) return;
+    private void adjustYAxis(
+            final NumberAxis axis,
+            final List<? extends Number> values,
+            final double padding) {
+        if (values.isEmpty()) {
+            return;
+        }
 
-        double min = values.stream().mapToDouble(Number::doubleValue).min().orElse(0);
-        double max = values.stream().mapToDouble(Number::doubleValue).max().orElse(0);
+        double min = values.stream()
+                .mapToDouble(Number::doubleValue)
+                .min()
+                .orElse(0);
+        double max = values.stream()
+                .mapToDouble(Number::doubleValue)
+                .max()
+                .orElse(0);
 
         if (min == max) {
             min -= 1;
@@ -149,7 +172,13 @@ public class ViewGraphsController {
         return 5;
     }
 
-    @FXML private void goToAddWorkout() throws Exception { navigator.showAddWorkout(); }
-    @FXML private void goToViewStatistics() throws Exception { navigator.showViewStatistics(); }
-}
+    @FXML
+    private void goToAddWorkout() throws Exception {
+        navigator.showAddWorkout();
+    }
 
+    @FXML
+    private void goToViewStatistics() throws Exception {
+        navigator.showViewStatistics();
+    }
+}

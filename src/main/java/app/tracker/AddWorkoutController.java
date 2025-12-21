@@ -7,7 +7,13 @@ import app.service.WorkoutService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -19,7 +25,19 @@ import java.util.List;
 
 import static java.lang.String.valueOf;
 
-public class AddWorkoutController {
+public final class AddWorkoutController {
+    private static final int SPACING_SMALL = 5;
+    private static final int SPACING_MEDIUM = 10;
+    private static final int PROMPT_LIMIT = 10;
+    private static final int MAX_COMBO_WIDTH = 200;
+    private static final int FIELD_MAX_WIDTH = 70;
+    private static final int BODYWEIGHT_FIELD_WIDTH = 60;
+    private static final int MIN_SETS = 1;
+    private static final int MIN_EXERCISES = 1;
+    private static final int SETS_CONTAINER_INDEX = 3;
+    private static final int WEIGHT_FIELD_INDEX = 1;
+    private static final int REPS_FIELD_INDEX = 3;
+
     private final Navigator navigator;
     @FXML
     private VBox workoutInfoContainer;
@@ -29,13 +47,13 @@ public class AddWorkoutController {
     private List<Exercise> allExercises;
     private final WorkoutService workoutService;
 
-    public AddWorkoutController(WorkoutService workoutService, Navigator navigator) {
+    public AddWorkoutController(final WorkoutService workoutService, final Navigator navigator) {
         this.workoutService = workoutService;
         this.navigator = navigator;
     }
 
     @FXML
-    public void initialize() {
+    public final void initialize() {
         allExercises = workoutService.loadExercises();
 
         addWorkoutInfoSection();
@@ -43,7 +61,7 @@ public class AddWorkoutController {
     }
 
     private void addWorkoutInfoSection() {
-        var workoutInfoBox = new VBox(10);
+        var workoutInfoBox = new VBox(SPACING_MEDIUM);
         workoutInfoBox.setAlignment(Pos.CENTER);
 
         var infoLabel = new Label("Session information");
@@ -51,7 +69,7 @@ public class AddWorkoutController {
         datePicker.setPromptText("Select workout date");
 
         var bodyweight = new TextField();
-        bodyweight.setMaxWidth(60);
+        bodyweight.setMaxWidth(BODYWEIGHT_FIELD_WIDTH);
         bodyweight.setPromptText("BW");
 
         workoutInfoBox.getChildren().addAll(infoLabel, datePicker, bodyweight);
@@ -60,21 +78,23 @@ public class AddWorkoutController {
 
     @FXML
     private void addExerciseSection() {
-
         var exerciseNumber = exercisesContainer.getChildren().size() + 1;
 
-        var exerciseBox = new VBox(10);
-        exerciseBox.setStyle("-fx-padding: 10; -fx-border-color: gray; -fx-border-width: 2px; -fx-border-radius: 15px;");
+        var exerciseBox = new VBox(SPACING_MEDIUM);
+        exerciseBox.setStyle("-fx-padding: 10; -fx-border-color: gray; "
+                + "-fx-border-width: 2px; -fx-border-radius: 15px;");
         exerciseBox.setAlignment(Pos.CENTER);
 
         var exerciseLabel = new Label("Exercise " + exerciseNumber);
 
-        List<String> exerciseNamesCopy = allExercises.stream().map(Exercise::name).toList();
+        List<String> exerciseNamesCopy = allExercises.stream()
+                .map(Exercise::name)
+                .toList();
 
         var exerciseCombo = new ComboBox<String>();
         exerciseCombo.setEditable(true);
         exerciseCombo.setPromptText("Enter exercise name");
-        exerciseCombo.setMaxWidth(200);
+        exerciseCombo.setMaxWidth(MAX_COMBO_WIDTH);
 
         exerciseCombo.setItems(FXCollections.observableArrayList(exerciseNamesCopy));
 
@@ -90,26 +110,30 @@ public class AddWorkoutController {
             if (newVal == null || newVal.trim().isEmpty()) {
                 items.addAll(exerciseNamesCopy);
             } else {
-                var filtered = exerciseNamesCopy.stream().filter(name -> name.toLowerCase().contains(newVal.toLowerCase())).limit(10).toList();
+                var filtered = exerciseNamesCopy.stream()
+                        .filter(name -> name.toLowerCase().contains(newVal.toLowerCase()))
+                        .limit(PROMPT_LIMIT)
+                        .toList();
                 items.addAll(filtered);
             }
 
             exerciseCombo.show();
         });
 
-        exerciseCombo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                editor.setText(newVal);
-            }
-        });
+        exerciseCombo.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal != null) {
+                        editor.setText(newVal);
+                    }
+                });
 
         var infoBtn = new Button("info");
         infoBtn.setOnAction(e -> showExerciseInfo(exerciseCombo));
 
-        var exerciseInput = new HBox(10, exerciseCombo, infoBtn);
+        var exerciseInput = new HBox(SPACING_MEDIUM, exerciseCombo, infoBtn);
         exerciseInput.setAlignment(Pos.CENTER);
 
-        var setsContainer = new VBox(5);
+        var setsContainer = new VBox(SPACING_SMALL);
         setsContainer.setAlignment(Pos.CENTER);
 
         addSet(setsContainer);
@@ -121,37 +145,38 @@ public class AddWorkoutController {
         var removeSetBtn = new Button("-");
         removeSetBtn.setStyle("-fx-min-width: 50; -fx-background-color: #af3321");
         removeSetBtn.setOnAction(e -> {
-            if (setsContainer.getChildren().size() > 1) {
+            if (setsContainer.getChildren().size() > MIN_SETS) {
                 setsContainer.getChildren().remove(setsContainer.getChildren().size() - 1);
                 updateSetNumbers(setsContainer);
             }
         });
 
-        var setButtons = new HBox(10, addSetBtn, removeSetBtn);
+        var setButtons = new HBox(SPACING_MEDIUM, addSetBtn, removeSetBtn);
         setButtons.setAlignment(Pos.CENTER);
 
-        exerciseBox.getChildren().addAll(exerciseLabel, exerciseInput, new Label("Sets"), setsContainer, setButtons);
+        exerciseBox.getChildren().addAll(exerciseLabel, exerciseInput,
+                new Label("Sets"), setsContainer, setButtons);
 
         exercisesContainer.getChildren().add(exerciseBox);
     }
 
-    private void addSet(VBox setsContainer) {
+    private void addSet(final VBox setsContainer) {
         var setNumber = setsContainer.getChildren().size() + 1;
 
-        var setBox = new HBox(10);
+        var setBox = new HBox(SPACING_MEDIUM);
         setBox.setAlignment(Pos.CENTER);
 
         var setLabel = new Label(valueOf(setNumber));
 
         var weightField = new TextField();
         weightField.setPromptText("Weight");
-        weightField.setMaxWidth(70);
+        weightField.setMaxWidth(FIELD_MAX_WIDTH);
 
         var xLabel = new Label("×");
 
         var repsField = new TextField();
         repsField.setPromptText("Reps");
-        repsField.setMaxWidth(70);
+        repsField.setMaxWidth(FIELD_MAX_WIDTH);
 
         setBox.getChildren().addAll(setLabel, weightField, xLabel, repsField);
         setsContainer.getChildren().add(setBox);
@@ -161,8 +186,9 @@ public class AddWorkoutController {
 
     @FXML
     private void removeLastExercise() {
-        if (exercisesContainer.getChildren().size() > 1) {
-            exercisesContainer.getChildren().remove(exercisesContainer.getChildren().size() - 1);
+        if (exercisesContainer.getChildren().size() > MIN_EXERCISES) {
+            exercisesContainer.getChildren()
+                    .remove(exercisesContainer.getChildren().size() - 1);
             updateExerciseNumbers();
         }
     }
@@ -176,7 +202,7 @@ public class AddWorkoutController {
         }
     }
 
-    private void updateSetNumbers(VBox setsContainer) {
+    private void updateSetNumbers(final VBox setsContainer) {
         var i = 1;
         for (var node : setsContainer.getChildren()) {
             var box = (HBox) node;
@@ -186,7 +212,7 @@ public class AddWorkoutController {
     }
 
     @FXML
-    private void showExerciseInfo(ComboBox<String> comboBox) {
+    private void showExerciseInfo(final ComboBox<String> comboBox) {
         var exerciseName = comboBox.getEditor().getText().trim();
         if (exerciseName.isEmpty()) {
             showAlert("Enter exercise name");
@@ -203,7 +229,7 @@ public class AddWorkoutController {
         alert.setTitle("Exercise information");
         alert.setHeaderText(exercise.name());
 
-        var content = new VBox(10);
+        var content = new VBox(SPACING_MEDIUM);
         content.setStyle("-fx-padding: 20;");
 
         var musclesLabel = new Label("Targeted muscles: " + exercise.muscles());
@@ -221,7 +247,8 @@ public class AddWorkoutController {
     private void saveWorkout() {
         try {
             List<VBox> exerciseBoxes = new ArrayList<>();
-            exercisesContainer.getChildren().forEach(node -> exerciseBoxes.add((VBox) node));
+            exercisesContainer.getChildren()
+                    .forEach(node -> exerciseBoxes.add((VBox) node));
 
             if (hasInvalidSets(exerciseBoxes)) {
                 showAlert("Fill in both weight and reps for each set.");
@@ -251,7 +278,7 @@ public class AddWorkoutController {
 
                 var exerciseName = combo.getEditor().getText();
 
-                var setsContainer = (VBox) exerciseBox.getChildren().get(3);
+                var setsContainer = (VBox) exerciseBox.getChildren().get(SETS_CONTAINER_INDEX);
                 String setsString = buildSetsString(setsContainer);
 
                 exList.add(new ExerciseWithSets(exerciseName, setsString));
@@ -270,23 +297,22 @@ public class AddWorkoutController {
         }
     }
 
-    private void showAlert(String message) {
+    private void showAlert(final String message) {
         var alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setContentText(message);
         alert.showAndWait();
     }
 
-    public boolean hasInvalidSets(List<VBox> exerciseBoxes) {
+    public boolean hasInvalidSets(final List<VBox> exerciseBoxes) {
         for (var node : exerciseBoxes) {
-
-            var setsContainer = (VBox) node.getChildren().get(3);
+            var setsContainer = (VBox) node.getChildren().get(SETS_CONTAINER_INDEX);
 
             for (var setNode : setsContainer.getChildren()) {
                 var setBox = (HBox) setNode;
 
-                var weightField = (TextField) setBox.getChildren().get(1);
-                var repsField = (TextField) setBox.getChildren().get(3);
+                var weightField = (TextField) setBox.getChildren().get(WEIGHT_FIELD_INDEX);
+                var repsField = (TextField) setBox.getChildren().get(REPS_FIELD_INDEX);
 
                 var weightFilled = !weightField.getText().isBlank();
                 var repsFilled = !repsField.getText().isBlank();
@@ -299,18 +325,22 @@ public class AddWorkoutController {
         return false;
     }
 
-    public String buildSetsString(VBox setsContainer) {
+    public String buildSetsString(final VBox setsContainer) {
         var setsString = new StringBuilder();
 
         for (var setNode : setsContainer.getChildren()) {
             var setBox = (HBox) setNode;
 
-            var weightFieldSet = (TextField) setBox.getChildren().get(1);
-            var repsFieldSet = (TextField) setBox.getChildren().get(3);
+            var weightFieldSet = (TextField) setBox.getChildren().get(WEIGHT_FIELD_INDEX);
+            var repsFieldSet = (TextField) setBox.getChildren().get(REPS_FIELD_INDEX);
 
             if (!weightFieldSet.getText().isBlank() && !repsFieldSet.getText().isBlank()) {
-                if (!setsString.isEmpty()) setsString.append("-");
-                setsString.append(weightFieldSet.getText()).append("x").append(repsFieldSet.getText());
+                if (!setsString.isEmpty()) {
+                    setsString.append("-");
+                }
+                setsString.append(weightFieldSet.getText())
+                        .append("x")
+                        .append(repsFieldSet.getText());
             }
         }
         return setsString.toString();
@@ -340,7 +370,8 @@ public class AddWorkoutController {
                 var warn = new Alert(Alert.AlertType.WARNING);
                 warn.setTitle("File not found");
                 warn.setHeaderText("Database file not found.");
-                warn.setContentText("Expected path:\n" + Paths.get("workouts.db").toAbsolutePath());
+                warn.setContentText("Expected path:\n"
+                        + Paths.get("workouts.db").toAbsolutePath());
                 warn.showAndWait();
             }
         } catch (Exception ex) {

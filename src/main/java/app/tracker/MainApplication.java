@@ -1,5 +1,9 @@
 package app.tracker;
 
+/**
+ * Main JavaFX application for workout tracker.
+ * Implements Navigator for screen switching.
+ */
 import app.database.DatabaseHelper;
 import app.database.OrmLiteWorkoutExerciseRepository;
 import app.database.OrmLiteWorkoutSessionRepository;
@@ -17,19 +21,24 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class MainApplication extends Application implements Navigator {
+public final class MainApplication extends Application implements Navigator {
+
+    private static final double MIN_WINDOW_WIDTH = 900;
+    private static final double MIN_WINDOW_HEIGHT = 900;
+    private static final double SCENE_WIDTH = 1200;
+    private static final double SCENE_HEIGHT = 900;
+
     private Stage primaryStage;
 
     @Override
-    public void start(Stage stage) throws IOException, SQLException {
+    public void start(final Stage stage) throws IOException, SQLException {
         primaryStage = stage;
         DatabaseHelper.init();
-
         showAddWorkout();
 
         stage.getIcons().add(new Image("/icon.jpg"));
-        stage.setMinWidth(900);
-        stage.setMinHeight(900);
+        stage.setMinWidth(MIN_WINDOW_WIDTH);
+        stage.setMinHeight(MIN_WINDOW_HEIGHT);
         stage.setTitle("Workout Tracker");
         stage.show();
     }
@@ -40,20 +49,22 @@ public class MainApplication extends Application implements Navigator {
         var exerciseRepo = new OrmLiteWorkoutExerciseRepository(cs);
         var workoutService = new WorkoutService(sessionRepo, exerciseRepo);
 
-        var loader = new FXMLLoader(MainApplication.class.getResource("add-workout-view.fxml"));
+        var loader = new FXMLLoader(
+                MainApplication.class.getResource("add-workout-view.fxml"));
         loader.setControllerFactory(c -> {
             if (c == AddWorkoutController.class) {
                 return new AddWorkoutController(workoutService, this);
             }
-            throw new IllegalStateException("Unknown controller class: " + c);
+            throw new IllegalStateException(
+                    "Unknown controller class: " + c);
         });
 
-        var scene = new Scene(loader.load(), 900, 900);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
+        var scene = new Scene(loader.load(), SCENE_WIDTH, SCENE_HEIGHT);
+        scene.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Add workout");
     }
-
 
     public void showViewStatistics() throws IOException, SQLException {
         var cs = DatabaseHelper.connectionSource();
@@ -62,16 +73,19 @@ public class MainApplication extends Application implements Navigator {
         var workoutService = new WorkoutService(sessionRepo, exerciseRepo);
         var statisticsService = new StatisticsService(workoutService);
 
-        var loader = new FXMLLoader(MainApplication.class.getResource("view-statistics-view.fxml"));
+        var loader = new FXMLLoader(
+                MainApplication.class.getResource("view-statistics-view.fxml"));
         loader.setControllerFactory(c -> {
             if (c == ViewStatisticsController.class) {
                 return new ViewStatisticsController(statisticsService, this);
             }
-            throw new IllegalStateException("Unknown controller class: " + c);
+            throw new IllegalStateException(
+                    "Unknown controller class: " + c);
         });
 
-        var scene = new Scene(loader.load(), 900, 900);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
+        var scene = new Scene(loader.load(), SCENE_WIDTH, SCENE_HEIGHT);
+        scene.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Statistics");
     }
@@ -83,22 +97,24 @@ public class MainApplication extends Application implements Navigator {
         var workoutService = new WorkoutService(sessionRepo, exerciseRepo);
         var graphsService = new GraphsService(workoutService);
 
-        var loader = new FXMLLoader(MainApplication.class.getResource("view-graphs-view.fxml"));
-
+        var loader = new FXMLLoader(
+                MainApplication.class.getResource("view-graphs-view.fxml"));
         loader.setControllerFactory(c -> {
             if (c == ViewGraphsController.class) {
                 return new ViewGraphsController(graphsService, this);
             }
-            throw new IllegalStateException("Unknown controller class: " + c);
+            throw new IllegalStateException(
+                    "Unknown controller class: " + c);
         });
 
-        var scene = new Scene(loader.load(), 900, 900);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
+        var scene = new Scene(loader.load(), SCENE_WIDTH, SCENE_HEIGHT);
+        scene.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/styles.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Progress");
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 }

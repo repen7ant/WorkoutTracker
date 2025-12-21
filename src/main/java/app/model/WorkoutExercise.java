@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "workout_exercises")
-public class WorkoutExercise {
+public final class WorkoutExercise {
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -15,12 +15,14 @@ public class WorkoutExercise {
     @DatabaseField
     private String setsString;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "session_id")
+    @DatabaseField(foreign = true, foreignAutoRefresh = true,
+            columnName = "session_id")
     private WorkoutSession session;
 
     public WorkoutExercise() {}
 
-    public WorkoutExercise(String name, String setsString, WorkoutSession session) {
+    public WorkoutExercise(final String name, final String setsString,
+                           final WorkoutSession session) {
         this.name = name;
         this.setsString = setsString;
         this.session = session;
@@ -42,4 +44,3 @@ public class WorkoutExercise {
         return id;
     }
 }
-

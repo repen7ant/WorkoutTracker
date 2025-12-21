@@ -15,24 +15,32 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-public class WorkoutService {
+public final class WorkoutService {
 
     private final WorkoutSessionRepository sessionRepo;
     private final WorkoutExerciseRepository exerciseRepo;
 
-    public WorkoutService(WorkoutSessionRepository sessionRepo, WorkoutExerciseRepository exerciseRepo) {
+    public WorkoutService(
+            final WorkoutSessionRepository sessionRepo,
+            final WorkoutExerciseRepository exerciseRepo) {
         this.sessionRepo = sessionRepo;
         this.exerciseRepo = exerciseRepo;
     }
 
-    public void saveWorkout(Date date, double bodyweight, List<ExerciseWithSets> exercises) throws SQLException {
+    public void saveWorkout(
+            final Date date,
+            final double bodyweight,
+            final List<ExerciseWithSets> exercises) throws SQLException {
 
         WorkoutSession session = new WorkoutSession(date, bodyweight);
         sessionRepo.save(session);
 
-        for (ExerciseWithSets ex : exercises) {
-            WorkoutExercise we = new WorkoutExercise(ex.name(), ex.setsString(), session);
-            exerciseRepo.save(we);
+        for (ExerciseWithSets exercise : exercises) {
+            WorkoutExercise workoutExercise = new WorkoutExercise(
+                    exercise.name(),
+                    exercise.setsString(),
+                    session);
+            exerciseRepo.save(workoutExercise);
         }
     }
 
@@ -56,7 +64,6 @@ public class WorkoutService {
             DatabaseHelper.init();
             return true;
         }
-
         return false;
     }
 
@@ -65,7 +72,7 @@ public class WorkoutService {
         return ExerciseCsvParser.getExercises();
     }
 
-    public Exercise findExercise(String exerciseName) {
+    public Exercise findExercise(final String exerciseName) {
         return ExerciseCsvParser.findByName(exerciseName);
     }
 }
