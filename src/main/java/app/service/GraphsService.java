@@ -23,22 +23,21 @@ public class GraphsService {
         return data;
     }
 
-    public List<Pair<Date, Pair<Double, Integer>>> getExerciseData(String exerciseName) throws SQLException {
+    public List<Pair<Date, Double>> getExerciseData(String exerciseName) throws SQLException {
         var exercises = workoutService.getAllExercises();
-        List<Pair<Date, Pair<Double, Integer>>> data = new ArrayList<>();
+        List<Pair<Date, Double>> data = new ArrayList<>();
 
         for (WorkoutExercise ex : exercises) {
             if (exerciseName == null
                     || exerciseName.isBlank()
-                    || ex.getName().toLowerCase().contains(exerciseName.toLowerCase())) {
+                    || ex.getName().equalsIgnoreCase(exerciseName)) {
                 var bestSet = SetParser.pickBestSet(ex.getSetsString());
                 if (!bestSet.isEmpty()) {
                     var wr = bestSet.split("x");
                     if (wr.length == 2) {
                         try {
                             var weight = Double.parseDouble(wr[0]);
-                            var reps = Integer.parseInt(wr[1]);
-                            data.add(new Pair<>(ex.getSession().getDate(), new Pair<>(weight, reps)));
+                            data.add(new Pair<>(ex.getSession().getDate(), weight));
                         } catch (NumberFormatException ignore) {}
                     }
                 }
@@ -55,3 +54,4 @@ public class GraphsService {
                 .toList();
     }
 }
+

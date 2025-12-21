@@ -103,12 +103,10 @@ public final class ViewGraphsController {
         lineChart.getData().add(series);
     }
 
-    private void loadExerciseChart(final String exerciseName)
-            throws SQLException {
+    private void loadExerciseChart(final String exerciseName) throws SQLException {
         var data = graphsService.getExerciseData(exerciseName);
 
-        XYChart.Series<String, Number> weightSeries =
-                new XYChart.Series<>();
+        XYChart.Series<String, Number> weightSeries = new XYChart.Series<>();
         weightSeries.setName("Weight (kg)");
 
         List<Double> weightValues = new ArrayList<>();
@@ -117,10 +115,9 @@ public final class ViewGraphsController {
                 .sorted(Comparator.comparing(Pair::getKey))
                 .forEach(p -> {
                     String dateStr = DATE_FMT.format(p.getKey());
-                    double weight = p.getValue().getKey();
+                    double weight = p.getValue();
                     weightValues.add(weight);
-                    weightSeries.getData().add(
-                            new XYChart.Data<>(dateStr, weight));
+                    weightSeries.getData().add(new XYChart.Data<>(dateStr, weight));
                 });
 
         var yAxis = (NumberAxis) lineChart.getYAxis();

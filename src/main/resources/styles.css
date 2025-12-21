@@ -71,3 +71,13 @@
 .chart-horizontal-grid-lines {
     -fx-stroke: rgba(0, 0, 0);
 }
+
+.chart-series-line {
+    -fx-stroke: purple;
+    -fx-stroke-width: 4px;
+}
+
+.chart-line-symbol {
+    -fx-background-color: red;
+    -fx-padding: 6px;
+}
