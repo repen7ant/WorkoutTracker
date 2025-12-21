@@ -32,7 +32,7 @@ public final class WorkoutService {
             final double bodyweight,
             final List<ExerciseWithSets> exercises) throws SQLException {
 
-        WorkoutSession session = new WorkoutSession(date, bodyweight);
+        var session = new WorkoutSession(date, bodyweight);
         sessionRepo.save(session);
 
         for (ExerciseWithSets exercise : exercises) {
@@ -55,9 +55,9 @@ public final class WorkoutService {
     public boolean deleteDatabase() throws Exception {
         DatabaseHelper.close();
 
-        String dbUrl = "jdbc:sqlite:workouts.db";
-        String pathPart = dbUrl.replace("jdbc:sqlite:", "");
-        Path dbPath = Paths.get(pathPart).toAbsolutePath();
+        var dbUrl = "jdbc:sqlite:workouts.db";
+        var pathPart = dbUrl.replace("jdbc:sqlite:", "");
+        var dbPath = Paths.get(pathPart).toAbsolutePath();
 
         if (Files.exists(dbPath)) {
             Files.delete(dbPath);

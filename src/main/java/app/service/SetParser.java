@@ -4,7 +4,7 @@ public class SetParser {
     public static String pickBestSet(String sets) {
         if (sets == null || sets.isBlank()) return "";
 
-        String best = "";
+        var best = "";
         double bestW = -1;
         int bestR = -1;
 

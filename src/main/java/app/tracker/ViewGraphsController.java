@@ -39,10 +39,10 @@ public final class ViewGraphsController {
 
     @FXML
     public void initialize() {
-        CategoryAxis xAxis = new CategoryAxis();
+        var xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
 
-        NumberAxis yAxis = new NumberAxis();
+        var yAxis = new NumberAxis();
         yAxis.setLabel("Weight (kg)");
 
         lineChart = new LineChart<>(xAxis, yAxis);
@@ -64,7 +64,7 @@ public final class ViewGraphsController {
     }
 
     private void reloadChart() {
-        String selected = chartCombo.getValue();
+        var selected = chartCombo.getValue();
         if (selected == null) {
             return;
         }
@@ -123,7 +123,7 @@ public final class ViewGraphsController {
                             new XYChart.Data<>(dateStr, weight));
                 });
 
-        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
+        var yAxis = (NumberAxis) lineChart.getYAxis();
         adjustYAxis(yAxis, weightValues, PADDING_EXERCISE);
         yAxis.setLabel("Weight (kg)");
 
@@ -141,11 +141,11 @@ public final class ViewGraphsController {
             return;
         }
 
-        double min = values.stream()
+        var min = values.stream()
                 .mapToDouble(Number::doubleValue)
                 .min()
                 .orElse(0);
-        double max = values.stream()
+        var max = values.stream()
                 .mapToDouble(Number::doubleValue)
                 .max()
                 .orElse(0);
@@ -159,7 +159,7 @@ public final class ViewGraphsController {
         axis.setLowerBound(min - padding);
         axis.setUpperBound(max + padding);
 
-        double range = (max - min) + padding * 2;
+        var range = (max - min) + padding * 2;
         axis.setTickUnit(calculateNiceTick(range));
     }
 

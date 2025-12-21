@@ -39,7 +39,7 @@ public final class ExerciseCsvParser {
                         continue;
                     }
 
-                    String name = parts[0].trim();
+                    var name = parts[0].trim();
                     if (name.isEmpty()) {
                         continue;
                     }

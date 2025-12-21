@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,7 +47,7 @@ public final class ViewStatisticsController {
     }
 
     @FXML
-    public final void initialize() {
+    public void initialize() {
         modeCombo.getItems().addAll("1) Bodyweight by date",
                 "2) All exercises, all sets",
                 "3) All exercises, best set",
@@ -63,7 +62,7 @@ public final class ViewStatisticsController {
     }
 
     private void reloadTable() {
-        String mode = modeCombo.getValue();
+        var mode = modeCombo.getValue();
         if (mode == null) {
             return;
         }
@@ -106,9 +105,9 @@ public final class ViewStatisticsController {
     }
 
     private TableColumn<Map<String, Object>, java.util.Date> dateCol(final int prefWidth) {
-        TableColumn<Map<String, Object>, java.util.Date> column = col("Date",
+        var column = col("Date",
                 "date", prefWidth, java.util.Date.class);
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        var dateFormat = new SimpleDateFormat(DATE_FORMAT);
         column.setCellFactory(tableColumn -> new TableCell<Map<String, Object>, java.util.Date>() {
             @Override
             protected void updateItem(final java.util.Date item, final boolean empty) {
@@ -136,7 +135,7 @@ public final class ViewStatisticsController {
 
     private void loadAllExercisesAllSets() throws SQLException {
         String query = searchField.getText();
-        List<Map<String, Object>> data = statisticsService.getAllExercisesAllSets(query);
+        var data = statisticsService.getAllExercisesAllSets(query);
 
         table.getColumns().add(col("Exercise ID", "id",
                 COLUMN_WIDTH_MEDIUM, Integer.class));
@@ -153,15 +152,15 @@ public final class ViewStatisticsController {
     }
 
     private void loadAllExercisesBestSet() throws SQLException {
-        String query = searchField.getText();
-        List<Map<String, Object>> data = statisticsService.getAllExercisesBestSet(query);
+        var query = searchField.getText();
+        var data = statisticsService.getAllExercisesBestSet(query);
 
         table.getColumns().add(col("Exercise ID", "id",
                 COLUMN_WIDTH_SMALL, Integer.class));
         table.getColumns().add(col("Exercise", "name",
                 COLUMN_WIDTH_XXLARGE, String.class));
 
-        Set<String> dates = statisticsService.getAllDates();
+        var dates = statisticsService.getAllDates();
         for (String date : dates) {
             table.getColumns().add(col(date, date,
                     COLUMN_WIDTH_LARGE, String.class));
@@ -180,7 +179,7 @@ public final class ViewStatisticsController {
                 COLUMN_WIDTH_XXLARGE, String.class));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        String query = searchField.getText();
+        var query = searchField.getText();
         backingData.addAll(statisticsService.getAllSessionsSummary(query));
     }
 

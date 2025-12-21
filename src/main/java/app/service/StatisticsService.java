@@ -23,7 +23,7 @@ public final class StatisticsService {
     }
 
     public List<Map<String, Object>> getBodyweightByDate() throws SQLException {
-        List<WorkoutSession> sessions = workoutService.getAllSessions();
+        var sessions = workoutService.getAllSessions();
         List<Map<String, Object>> rows = new ArrayList<>();
 
         for (WorkoutSession session : sessions) {
@@ -68,9 +68,9 @@ public final class StatisticsService {
 
     public List<Map<String, Object>> getAllExercisesBestSet(
             final String query) throws SQLException {
-        List<WorkoutExercise> filtered = filterExercisesByName(
+        var filtered = filterExercisesByName(
                 workoutService.getAllExercises(), query);
-        List<WorkoutSession> sessions = workoutService.getAllSessions();
+        var sessions = workoutService.getAllSessions();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Set<String> dates = sessions.stream()
@@ -127,8 +127,8 @@ public final class StatisticsService {
     }
 
     public Set<String> getAllDates() throws SQLException {
-        List<WorkoutSession> sessions = workoutService.getAllSessions();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        var sessions = workoutService.getAllSessions();
+        var df = new SimpleDateFormat("yyyy-MM-dd");
         return sessions.stream()
                 .map(s -> df.format(s.getDate()))
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -140,7 +140,7 @@ public final class StatisticsService {
         if (query == null || query.isBlank()) {
             return exercises;
         }
-        String lowerQuery = query.toLowerCase();
+        var lowerQuery = query.toLowerCase();
         return exercises.stream()
                 .filter(ex -> ex.getName()
                         .toLowerCase()

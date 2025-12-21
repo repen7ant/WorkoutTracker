@@ -154,4 +154,60 @@ class GraphsServiceTest {
 
         assertTrue(names.isEmpty());
     }
+
+    @Test
+    void getExerciseData_nullExerciseName_returnsAllExercises() throws SQLException {
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1));
+
+        List<Pair<Date, Pair<Double, Integer>>> data =
+                graphsService.getExerciseData(null);
+
+        assertEquals(1, data.size());
+    }
+
+    @Test
+    void getExerciseData_blankExerciseName_returnsAllExercises() throws SQLException {
+        when(workoutService.getAllExercises()).thenReturn(List.of(e1_s1));
+
+        List<Pair<Date, Pair<Double, Integer>>> data =
+                graphsService.getExerciseData("   ");
+
+        assertEquals(1, data.size());
+    }
+
+    @Test
+    void getExerciseData_bestSetHasWrongFormat_skipsParsing() throws SQLException {
+        WorkoutExercise wrongFormat = new WorkoutExercise("Bench Press", "110x4xextra", s1);
+        when(workoutService.getAllExercises()).thenReturn(List.of(wrongFormat));
+
+        List<Pair<Date, Pair<Double, Integer>>> data =
+                graphsService.getExerciseData("Bench Press");
+
+        assertTrue(data.isEmpty());
+    }
+
+    @Test
+    void getExerciseData_numberFormatException_ignoresAndContinues() throws SQLException {
+        WorkoutExercise invalidWeight = new WorkoutExercise("Bench Press", "abcx5", s1);
+        WorkoutExercise validExercise = new WorkoutExercise("Squat", "140x5", s1);
+
+        when(workoutService.getAllExercises()).thenReturn(List.of(invalidWeight, validExercise));
+
+        List<Pair<Date, Pair<Double, Integer>>> data =
+                graphsService.getExerciseData("squat");
+
+        assertEquals(1, data.size());
+        assertEquals(140.0, data.get(0).getValue().getKey());
+        assertEquals(5, data.get(0).getValue().getValue());
+    }
+    @Test
+    void getExerciseData_invalidReps_ignoresAndContinues() throws SQLException {
+        WorkoutExercise invalidReps = new WorkoutExercise("Bench Press", "110xabc", s1);
+        when(workoutService.getAllExercises()).thenReturn(List.of(invalidReps));
+
+        List<Pair<Date, Pair<Double, Integer>>> data =
+                graphsService.getExerciseData("Bench Press");
+
+        assertTrue(data.isEmpty());
+    }
 }
