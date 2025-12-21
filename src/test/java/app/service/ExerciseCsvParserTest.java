@@ -204,4 +204,45 @@ class ExerciseCsvParserTest {
                 csvContent.getBytes(StandardCharsets.UTF_8));
         mockedStatic.when(ExerciseCsvParser::openCsv).thenReturn(mockStream);
     }
+
+    @Test
+    void loadExercises_logsError_whenExceptionThrown() {
+        ExerciseCsvParser.clear();
+
+        InputStream brokenStream = new InputStream() {
+            @Override
+            public int read() {
+                throw new RuntimeException("boom");
+            }
+        };
+
+        mockedStatic.when(ExerciseCsvParser::openCsv).thenReturn(brokenStream);
+
+        assertDoesNotThrow(ExerciseCsvParser::loadExercises);
+        assertTrue(ExerciseCsvParser.getExercises().isEmpty());
+    }
+
+    @Test
+    void findByName_skipsExercisesWithNullName() {
+        ExerciseCsvParser.clear();
+
+        Exercise bad = new Exercise(null, "Chest", "Desc");
+        Exercise good = new Exercise("Bench Press", "Chest", "Desc");
+
+        try {
+            var field = ExerciseCsvParser.class.getDeclaredField("EXERCISES");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            List<Exercise> list = (List<Exercise>) field.get(null);
+            list.add(bad);
+            list.add(good);
+        } catch (Exception e) {
+            fail(e);
+        }
+
+        Exercise result = ExerciseCsvParser.findByName("bench");
+
+        assertNotNull(result);
+        assertEquals("Bench Press", result.name());
+    }
 }

@@ -28,7 +28,6 @@ public final class ViewStatisticsController {
     private static final int COLUMN_WIDTH_XXLARGE = 200;
     private static final int COLUMN_WIDTH_XXXLARGE = 250;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final String LOGGER_NAME = "ViewStatisticsController";
 
     private final Navigator navigator;
 

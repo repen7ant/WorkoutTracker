@@ -266,4 +266,36 @@ class StatisticsServiceTest {
 
         assertEquals(2, rows.size());
     }
+
+    @Test
+    void getAllSessionsSummary_skipsExercisesWithDifferentSessionId() throws SQLException {
+        setId(s1, 1);
+        setId(s2, 2);
+
+        when(workoutService.getAllSessions()).thenReturn(List.of(s1, s2));
+
+        WorkoutExercise onlyInSecond =
+                new WorkoutExercise("Bench Press", "100x5", s2);
+
+        when(workoutService.getAllExercises()).thenReturn(List.of(onlyInSecond));
+
+        List<Map<String, Object>> rows =
+                statisticsService.getAllSessionsSummary(null);
+
+        assertEquals(1, rows.size());
+
+        Map<String, Object> row = rows.get(0);
+        assertEquals("Bench Press", row.get("name"));
+        assertEquals(s2.getDate(), row.get("date"));
+    }
+
+    private static void setId(WorkoutSession session, int id) {
+        try {
+            var f = WorkoutSession.class.getDeclaredField("id");
+            f.setAccessible(true);
+            f.setInt(session, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

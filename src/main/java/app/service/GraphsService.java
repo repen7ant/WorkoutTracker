@@ -28,7 +28,9 @@ public class GraphsService {
         List<Pair<Date, Pair<Double, Integer>>> data = new ArrayList<>();
 
         for (WorkoutExercise ex : exercises) {
-            if (exerciseName.equalsIgnoreCase(ex.getName())) {
+            if (exerciseName == null
+                    || exerciseName.isBlank()
+                    || ex.getName().toLowerCase().contains(exerciseName.toLowerCase())) {
                 String bestSet = SetParser.pickBestSet(ex.getSetsString());
                 if (!bestSet.isEmpty()) {
                     String[] wr = bestSet.split("x");

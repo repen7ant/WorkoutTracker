@@ -42,4 +42,10 @@ class SetParserTest {
         String best = SetParser.pickBestSet("80x5-82.5x4-82.5x6");
         assertEquals("82.5x6", best);
     }
+
+    @Test
+    void pickBestSet_sameWeightAndReps_keepsFirst() {
+        String best = SetParser.pickBestSet("100x5-100x5");
+        assertEquals("100x5", best);
+    }
 }
