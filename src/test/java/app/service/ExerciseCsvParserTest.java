@@ -1,13 +1,16 @@
 package app.service;
 
 import app.model.Exercise;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,46 +18,73 @@ import static org.mockito.Answers.CALLS_REAL_METHODS;
 
 class ExerciseCsvParserTest {
 
+    private MockedStatic<ExerciseCsvParser> mockedStatic;
+
     @BeforeEach
-    void clearStaticExercises() throws Exception {
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-        ((List<?>) field.get(null)).clear();
+    void setUp() {
+        mockedStatic = Mockito.mockStatic(ExerciseCsvParser.class, CALLS_REAL_METHODS);
+        ExerciseCsvParser.clear();
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedStatic.close();
     }
 
     @Test
-    void loadExercises_parsesCsvSuccessfully() {
+    void loadExercises_parsesCsvSuccessfully() throws IOException {
+        String csvContent = "name,muscles,description\n" +
+                "Bench Press,Chest,Press the bar\n" +
+                "Squat,Legs,Squat down\n" +
+                "Deadlift,Back,Deadlift";
+        setupMockCsv(csvContent);
+
         ExerciseCsvParser.loadExercises();
+        List<Exercise> exercises = ExerciseCsvParser.getExercises();
+
+        assertEquals(3, exercises.size());
+        assertEquals("Bench Press", exercises.get(0).name());
+        assertEquals("Chest", exercises.get(0).muscles());
+        assertEquals("Press the bar", exercises.get(0).description());
+    }
+
+    @Test
+    void getExercises_lazyLoadsWhenEmpty() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
 
         List<Exercise> exercises = ExerciseCsvParser.getExercises();
 
-        assertFalse(exercises.isEmpty(), "Exercises should be loaded");
-
-        Exercise first = exercises.get(0);
-        assertNotNull(first.name());
-        assertNotNull(first.muscles());
-        assertNotNull(first.description());
+        assertEquals(1, exercises.size());
+        assertEquals("Bench Press", exercises.get(0).name());
     }
 
     @Test
-    void getExercises_lazyLoadsWhenEmpty() {
-        List<Exercise> exercises = ExerciseCsvParser.getExercises();
-
-        assertFalse(exercises.isEmpty());
-    }
-
-    @Test
-    void findByName_returnsMatchingExercise_ignoreCase() {
+    void findByName_returnsMatchingExercise_ignoreCase() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                Squat,Legs,Test
+                """;
+        setupMockCsv(csvContent);
         ExerciseCsvParser.loadExercises();
 
-        Exercise result = ExerciseCsvParser.findByName("bench");
+        Exercise result = ExerciseCsvParser.findByName("bEnCh");
 
         assertNotNull(result);
-        assertTrue(result.name().toLowerCase().contains("bench"));
+        assertEquals("Bench Press", result.name());
     }
 
     @Test
-    void findByName_returnsNull_whenNoMatch() {
+    void findByName_returnsNull_whenNoMatch() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
         ExerciseCsvParser.loadExercises();
 
         Exercise result = ExerciseCsvParser.findByName("___NO_SUCH_EXERCISE___");
@@ -63,138 +93,115 @@ class ExerciseCsvParserTest {
     }
 
     @Test
-    void loadExercises_handlesMissingResourceGracefully() throws Exception {
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-        ((List<?>) field.get(null)).clear();
+    void loadExercises_handlesMissingResourceGracefully() {
+        mockedStatic.when(ExerciseCsvParser::openCsv).thenReturn(null);
 
         assertDoesNotThrow(ExerciseCsvParser::loadExercises);
+        List<Exercise> exercises = ExerciseCsvParser.getExercises();
+        assertTrue(exercises.isEmpty());
     }
 
     @Test
-    void findByName_returnsNull_whenNullName() {
+    void findByName_returnsNull_whenNullName() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
         ExerciseCsvParser.loadExercises();
 
         Exercise result = ExerciseCsvParser.findByName(null);
-
         assertNull(result);
     }
 
     @Test
-    void findByName_returnsNull_whenEmptyName() {
+    void findByName_returnsNull_whenEmptyName() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
         ExerciseCsvParser.loadExercises();
 
         Exercise result = ExerciseCsvParser.findByName("");
-
         assertNull(result);
     }
 
     @Test
-    void loadExercises_doesNotDuplicateOnMultipleCalls() {
+    void loadExercises_doesNotDuplicateOnMultipleCalls() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
+
         ExerciseCsvParser.loadExercises();
         int sizeAfterFirst = ExerciseCsvParser.getExercises().size();
 
         ExerciseCsvParser.loadExercises();
         int sizeAfterSecond = ExerciseCsvParser.getExercises().size();
 
-        assertEquals(sizeAfterFirst, sizeAfterSecond);
+        assertEquals(1, sizeAfterFirst);
+        assertEquals(1, sizeAfterSecond);
     }
 
     @Test
-    void getExercises_returnsDefensiveCopy() {
+    void getExercises_returnsDefensiveCopy() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                Bench Press,Chest,Test
+                """;
+        setupMockCsv(csvContent);
         ExerciseCsvParser.loadExercises();
 
         List<Exercise> first = ExerciseCsvParser.getExercises();
         List<Exercise> second = ExerciseCsvParser.getExercises();
 
         assertNotSame(first, second);
-        assertEquals(first, second);
+        assertEquals(1, first.size());
+        assertEquals(1, second.size());
 
         first.clear();
         List<Exercise> afterClear = ExerciseCsvParser.getExercises();
-        assertFalse(afterClear.isEmpty());
+        assertEquals(1, afterClear.size()); // defensive copy работает
     }
 
     @Test
-    void loadExercises_ignoresLinesWithLessThanThreeColumns() throws Exception {
-        parseLineManually("OnlyName");
-        parseLineManually("Name,Muscles");
-        parseLineManually("Bench Press,Chest,Press the bar");
+    void loadExercises_ignoresLinesWithLessThanThreeColumns() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                OnlyName
+                Name,Muscles
+                Bench Press,Chest,Press the bar
+                """;
+        setupMockCsv(csvContent);
 
+        ExerciseCsvParser.loadExercises();
         List<Exercise> exercises = ExerciseCsvParser.getExercises();
+
         assertEquals(1, exercises.size());
         assertEquals("Bench Press", exercises.get(0).name());
     }
 
     @Test
-    void findByName_ignoresExercisesWithNullName() throws Exception {
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        List<Exercise> backing = (List<Exercise>) field.get(null);
-        backing.add(new Exercise(null, "Muscles", "Desc"));
-        backing.add(new Exercise("Bench Press", "Chest", "Press"));
+    void loadExercises_ignoresEmptyFirstColumn() throws IOException {
+        String csvContent = """
+                name,muscles,description
+                ,Muscles,Desc
+                Bench Press,Chest,Press
+                """;
+        setupMockCsv(csvContent);
 
-        Exercise result = ExerciseCsvParser.findByName("bench");
+        ExerciseCsvParser.loadExercises();
+        List<Exercise> exercises = ExerciseCsvParser.getExercises();
 
-        assertNotNull(result);
-        assertEquals("Bench Press", result.name());
+        assertEquals(1, exercises.size());
+        assertEquals("Bench Press", exercises.get(0).name());
     }
 
-
-    private void parseLineManually(String line) throws Exception {
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        List<Exercise> exercises = (List<Exercise>) field.get(null);
-
-        String[] parts = line.split(",", 3);
-        if (parts.length == 3) {
-            exercises.add(new Exercise(parts[0].trim(), parts[1].trim(), parts[2].trim()));
-        }
-    }
-
-    @Test
-    void loadExercises_shouldCatchException_whenStreamIsNull() throws Exception {
-        try (MockedStatic<ExerciseCsvParser> mocked =
-                     Mockito.mockStatic(ExerciseCsvParser.class, CALLS_REAL_METHODS)) {
-
-            mocked.when(ExerciseCsvParser::openCsv).thenReturn(null);
-
-            assertDoesNotThrow(ExerciseCsvParser::loadExercises);
-        }
-
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-
-        List<?> backing = (List<?>) field.get(null);
-
-        assertTrue(backing.isEmpty());
-    }
-
-    @Test
-    void loadExercises_shouldIgnoreLinesWithInvalidColumnCount() throws Exception {
-        Field field = ExerciseCsvParser.class.getDeclaredField("exercises");
-        field.setAccessible(true);
-
-        @SuppressWarnings("unchecked")
-        List<Exercise> backing = (List<Exercise>) field.get(null);
-
-        String[] invalid1 = "OnlyName".split(",", 3);
-        String[] invalid2 = "Name,Muscle".split(",", 3);
-        String[] valid = "Bench Press,Chest,Press".split(",", 3);
-
-        if (invalid1.length == 3) {
-            backing.add(new Exercise(invalid1[0], invalid1[1], invalid1[2]));
-        }
-        if (invalid2.length == 3) {
-            backing.add(new Exercise(invalid2[0], invalid2[1], invalid2[2]));
-        }
-        if (valid.length == 3) {
-            backing.add(new Exercise(valid[0], valid[1], valid[2]));
-        }
-
-        assertEquals(1, backing.size());
-        assertEquals("Bench Press", backing.get(0).name());
+    private void setupMockCsv(String csvContent) {
+        InputStream mockStream = new ByteArrayInputStream(
+                csvContent.getBytes(StandardCharsets.UTF_8));
+        mockedStatic.when(ExerciseCsvParser::openCsv).thenReturn(mockStream);
     }
 }

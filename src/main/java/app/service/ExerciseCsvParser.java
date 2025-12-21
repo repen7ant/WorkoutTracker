@@ -35,13 +35,20 @@ public final class ExerciseCsvParser {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",", CSV_PARTS_COUNT);
-                    if (parts.length == CSV_PARTS_COUNT) {
-                        EXERCISES.add(new Exercise(
-                                parts[0].trim(),
-                                parts[1].trim(),
-                                parts[2].trim()
-                        ));
+                    if (parts.length != CSV_PARTS_COUNT) {
+                        continue;
                     }
+
+                    String name = parts[0].trim();
+                    if (name.isEmpty()) {
+                        continue;
+                    }
+
+                    EXERCISES.add(new Exercise(
+                            name,
+                            parts[1].trim(),
+                            parts[2].trim()
+                    ));
                 }
             }
         } catch (Exception e) {
@@ -72,5 +79,10 @@ public final class ExerciseCsvParser {
     static InputStream openCsv() {
         return ExerciseCsvParser.class
                 .getResourceAsStream("/exercises.csv");
+    }
+
+    // чисто для тестов
+    static void clear() {
+        EXERCISES.clear();
     }
 }
