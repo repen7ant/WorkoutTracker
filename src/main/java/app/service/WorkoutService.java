@@ -9,7 +9,6 @@ import app.model.WorkoutExercise;
 import app.model.WorkoutSession;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;

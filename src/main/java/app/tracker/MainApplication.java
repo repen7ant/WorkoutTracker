@@ -1,9 +1,5 @@
 package app.tracker;
 
-/**
- * Main JavaFX application for workout tracker.
- * Implements Navigator for screen switching.
- */
 import app.database.DatabaseHelper;
 import app.database.OrmLiteWorkoutExerciseRepository;
 import app.database.OrmLiteWorkoutSessionRepository;
